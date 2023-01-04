@@ -207,6 +207,13 @@
             margin: 0;
         }
 
+        :global(.glassmorphism) {
+            background: rgba(255, 171, 171, 0.25);
+            box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+            border: 1px solid rgba(59, 58, 58, 0.18);
+            backdrop-filter: blur(2px);
+        }
+
         @media (pointer: fine) {
             
             :global(.full-btn:hover) {
@@ -353,6 +360,34 @@
     :global(.scale-in-ver-top) {
         -webkit-animation: scale-in-ver-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
                 animation: scale-in-ver-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+
+    @keyframes -global-slit-in-diagonal-1 {
+        0% {
+            -webkit-transform: translateZ(-800px) rotate3d(1, 1, 0, 90deg);
+                    transform: translateZ(-800px) rotate3d(1, 1, 0, 90deg);
+            -webkit-animation-timing-function: ease-in;
+                    animation-timing-function: ease-in;
+            opacity: 0;
+        }
+        54% {
+            -webkit-transform: translateZ(-160px) rotate3d(1, 1, 0, 87deg);
+                    transform: translateZ(-160px) rotate3d(1, 1, 0, 87deg);
+            -webkit-animation-timing-function: ease-in-out;
+                    animation-timing-function: ease-in-out;
+            opacity: 1;
+        }
+        100% {
+            -webkit-transform: translateZ(0) rotate3d(1, 1, 0, 0);
+                    transform: translateZ(0) rotate3d(1, 1, 0, 0);
+            -webkit-animation-timing-function: ease-out;
+                    animation-timing-function: ease-out;
+        }
+    }
+
+    :global(.slit-in-diagonal-1) {
+        -webkit-animation: slit-in-diagonal-1 0.45s ease-out both;
+                animation: slit-in-diagonal-1 0.45s ease-out both;
     }
 
 /*=====  End of Animations  ======*/

@@ -6,6 +6,7 @@
     import OurServices from "./page-components/OurServices.svelte";
     import OurExperts from "./page-components/OurExperts.svelte";
     import ItzStats from "./page-components/ItzStats.svelte";
+    import OurClients from "./page-components/OurClients.svelte";
     import createColorSchema, {
         supported_components,
     } from '../../libs/ColorSchema';
@@ -74,6 +75,15 @@
             color_schema: createColorSchema({
                 color: "var(--dark-color)",
                 contrast: "var(--theme-pearl)",
+            }, supported_components.NAVBAR)
+        },
+        OUR_CLIENTS: {
+            ord: 7,
+            section_id: "itz-our-clients",
+            ref: undefined,
+            color_schema: createColorSchema({
+                color: "var(--dark-color)",
+                contrast: "var(--clear-transparent-color)",
             }, supported_components.NAVBAR)
         },
     };
@@ -152,6 +162,9 @@
     </section>
     <section bind:this={sections_color_schemas.ITZ_STATS.ref} id={sections_color_schemas.ITZ_STATS.section_id}>
         <ItzStats/>
+    </section>
+    <section bind:this={sections_color_schemas.OUR_CLIENTS.ref} id={sections_color_schemas.OUR_CLIENTS.section_id}>
+        <OurClients/>
     </section>
 </main>
 

@@ -22,4 +22,6 @@
         font-size: var(--font-size-h1);
         font-weight: 500;
     }
+
+    
 </style>
