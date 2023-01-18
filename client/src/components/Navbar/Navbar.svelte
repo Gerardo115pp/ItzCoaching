@@ -5,14 +5,14 @@
     import createColorSchema, {
         supported_components,
     } from "../../libs/ColorSchema";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import itz_logo from "../../svg/MainLogo.svg";
 
-    let site_page = "inicio";
+    let site_page = window.location.hash.slice(1);
     const dropdown_names = {
         INICIO: {
             name: "inicio",
-            href: null,
+            href: '/',
             options: [
                 {
                     name: "inicio",
@@ -34,7 +34,7 @@
         },
         SERVICIOS: {
             name: "servicios",
-            href: null,
+            href: '/servicios',
             options: [
                 {
                     name: "mentoría",
@@ -127,7 +127,22 @@
             supported_components.NAVBAR
         );
         color_schema.define();
+
+        window.addEventListener("hashchange", setActivePage);
     });
+
+    onDestroy(() => {
+        window.removeEventListener("hashchange", setActivePage);
+    });
+
+    function setActivePage() {
+        let current_hash = window.location.hash;
+        current_hash = current_hash.replace("#", "");
+
+        if (current_hash !== site_page) {
+            site_page = current_hash;
+        }
+    }
 </script>
 
 <nav id="itz-main-navbar">
@@ -142,12 +157,13 @@
                 <span class="itz-navoption drop-down-parent">
                     {#if ddn.href !== null}
                         <a href={ddn.href} use:link>
-                            <span id={site_page === ddn.name ? "itz-current-route" : ""}>
-                                {ddn.name}
+                            <span id={site_page === ddn.href ? "itz-current-route" : ""}>
+                                {ddn.name + (console.log(`${site_page} === ${ddn.href}: ${site_page === ddn.href}`) || "")}
+                                <!-- ths console log is for Debug purposes -->
                             </span>
                         </a>
                     {:else}
-                        <span id={site_page === ddn.name ? "itz-current-route" : ""}>
+                        <span>
                             {ddn.name}
                         </span>
                     {/if}

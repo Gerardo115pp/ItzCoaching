@@ -10,9 +10,11 @@
     import Contact from "./page-components/Contact.svelte";
     import createColorSchema, {
         supported_components,
+        checkLastComponentCollition
     } from '../../libs/ColorSchema';
     import { onMount, onDestroy } from 'svelte';
 
+    let section_collition_listener = undefined;
     const sections_color_schemas = {
         HERO: {
             ord: 0,
@@ -97,58 +99,17 @@
             }, supported_components.NAVBAR)
         }
     };
-    
 
-    // SECTION POSITION CHECKING
-    const check_every = 50;
-    let skiped_sections = check_every; // first check is always performed
+    window.scrollTo(0, 0);
 
     onMount(() => {
-        window.addEventListener('scroll', checkLastComponentCollition);
+        section_collition_listener = checkLastComponentCollition.bind({}, sections_color_schemas);
+        window.addEventListener('scroll', section_collition_listener);
     });
 
     onDestroy(() => {
-        window.removeEventListener('scroll', checkLastComponentCollition);
+        window.removeEventListener('scroll', section_collition_listener);
     });
-
-    function sectionReachTopScreen(dom_element) {
-        if (dom_element === undefined) {
-            return false;
-        }
-
-        const element_rect = dom_element.getBoundingClientRect();
-
-        const element_top = element_rect.top;
-
-        const viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-
-        return element_top <= viewport_height * .14;
-    }
-    
-    function checkLastComponentCollition() {
-        if (skiped_sections < check_every) {
-            skiped_sections++;
-            return;
-        }
-
-        const sections = Object.values(sections_color_schemas);
-
-        if (sections.length === 0) {
-            return;
-        }
-
-        let last_collided_section = sections[0];
-        
-        for (let section of sections) {
-            if (sectionReachTopScreen(section.ref)) {
-                if (section.ord > last_collided_section.ord) {
-                    last_collided_section = section;
-                }
-            }
-        }
-
-        last_collided_section.color_schema.define();
-    }
 </script>
 
 <main id="itz-main-page">

@@ -65,7 +65,7 @@
 
         --page-padding-1: var(--spacing-4) var(--spacing-h2);
         --page-padding-2: var(--spacing-h3);
-
+        
         /* Misc */
         --navbar-height: 15vh; /* Not used yet */
         --footer-height: 56.72vh; /* Not used yet */
@@ -81,8 +81,9 @@
         --button-roundness: var(--boxes-roundness);
         --button-shadow: var(--boxes-shadow);
         --button-font-weight: 500;
-
-
+        
+        
+        --page-padding-top: calc(var(--spacing-4) + var(--navbar-height)) var(--spacing-h2) var(--spacing-4);
      
     }
 
