@@ -56,7 +56,7 @@
         },
         EXPERTAS: {
             name: "expertas",
-            href: null,
+            href: '/expertas',
             options: [
                 {
                     name: "Mentoras",

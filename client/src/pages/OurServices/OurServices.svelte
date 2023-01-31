@@ -12,6 +12,7 @@
     window.scrollTo(0, 0);
 
     let section_collition_listener = undefined;
+    
     const sections_color_schemas = {
         PIT_STOP: {
             ord: 0,
@@ -49,7 +50,7 @@
                 contrast: "var(--clear-color)",
             }, supported_components.NAVBAR)
         },
-    }
+    };
 
     
     onMount(() => {

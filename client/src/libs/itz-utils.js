@@ -39,3 +39,32 @@ export const createUnsecureJWT = payload => {
     return `${encoded_headers}.${encoded_payload}.`;
 }
 
+function attributesToJson() {
+    const json_data = {};
+    console.log("AttributestoJson:" + this);
+    Object.entries(this).forEach(([key, value]) => {
+        if (!(this[key] instanceof Function) && key[0] !== '_') {
+            json_data[key] = value;
+        }
+    });
+    return JSON.stringify(json_data);
+}
+
+export class ExpertPublicData {
+    constructor(id, name, subtitle, title, presentation, image, expert_type='consultant') {
+        this.id = id;
+        this.name = name;
+        this.subtitle = subtitle;
+        this.title = title;
+        this.presentation = presentation;
+        this.image = image;
+        this.expert_type = expert_type;
+    }
+
+    toJson = attributesToJson.bind(this);
+}
+
+export const expert_types = {
+    CONSULTANT: "consultant",
+    MENTOR: "mentor",
+}
