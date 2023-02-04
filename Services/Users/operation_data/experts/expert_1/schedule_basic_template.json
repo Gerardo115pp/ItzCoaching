@@ -1,0 +1,21 @@
+{
+    "owner": null,
+    "week_availability": {
+        "mondey": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+       "saturday": false
+    },
+    "time_availability": [
+        {
+            "start_time": "08:00",
+            "end_time": "12:00"
+        },
+        {
+            "start_time": "13:00",
+            "end_time": "17:00"
+        }
+    ]
+}

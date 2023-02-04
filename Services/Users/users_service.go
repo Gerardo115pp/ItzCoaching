@@ -18,6 +18,7 @@ func BinderRoutes(server server.Server, router *patriot_router.Router) {
 	router.RegisterRoute(patriot_router.NewRoute("/", true), handlers.HomeHandler(server))
 	router.RegisterRoute(patriot_router.NewRoute("/experts", true), middleware.CheckAuth(handlers.ExpertsHandler(server)))
 	router.RegisterRoute(patriot_router.NewRoute("/public_profiles", true), middleware.CheckAuth(handlers.PublicProfilesHandler(server)))
+	router.RegisterRoute(patriot_router.NewRoute("^/profile_pictures.*", false), middleware.CheckAuth(handlers.ProfilePicturesHandler(server)))
 }
 
 func main() {
