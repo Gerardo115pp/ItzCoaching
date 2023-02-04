@@ -103,7 +103,7 @@ func (mysql_repo *MysqlRepository) DeleteExpert(ctx context.Context, id int) err
 }
 
 func (mysql_repo *MysqlRepository) GetExpertPublicProfile(ctx context.Context, expert_id int) (*models.PublicProfile, error) {
-	var public_profile *models.PublicProfile
+	var public_profile *models.PublicProfile = new(models.PublicProfile)
 	var err error
 
 	stmt, err := mysql_repo.db.Prepare("SELECT public_name, professional_title, description, brief, image_href FROM public_profiles WHERE expert=?")
@@ -111,7 +111,7 @@ func (mysql_repo *MysqlRepository) GetExpertPublicProfile(ctx context.Context, e
 		return nil, err
 	}
 
-	err = stmt.QueryRowContext(ctx, expert_id).Scan(&public_profile.Public_name, &public_profile.Professional_title, &public_profile.Description, &public_profile.Biref, &public_profile.Image_url)
+	err = stmt.QueryRowContext(ctx, expert_id).Scan(&public_profile.Public_name, &public_profile.Professional_title, &public_profile.Description, &public_profile.Brief, &public_profile.Image_url)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (mysql_repo *MysqlRepository) UpdateExpertPublicProfile(ctx context.Context
 		return err
 	}
 
-	_, err = stmt.ExecContext(ctx, public_profile.Public_name, public_profile.Professional_title, public_profile.Description, public_profile.Biref, public_profile.Image_url, public_profile.Expert_id)
+	_, err = stmt.ExecContext(ctx, public_profile.Public_name, public_profile.Professional_title, public_profile.Description, public_profile.Brief, public_profile.Image_url, public_profile.Expert_id)
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ type PublicProfile struct {
 	Public_name        string `json:"public_name"`
 	Professional_title string `json:"professional_title"`
 	Description        string `json:"description"`
-	Biref              string `json:"biref"`
+	Brief              string `json:"brief"`
 	Image_url          string `json:"image_url"`
 	Expert_id          int    `json:"expert_id"`
 }
@@ -55,7 +55,7 @@ func (pp *PublicProfile) Update(new_data map[string]any) error {
 	}
 
 	if new_data["biref"] != nil {
-		pp.Biref = new_data["biref"].(string)
+		pp.Brief = new_data["biref"].(string)
 	}
 
 	if new_data["image_url"] != nil {

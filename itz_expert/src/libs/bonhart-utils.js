@@ -47,4 +47,12 @@ export const hasJwtExpired = jwt_token => {
     return decoded_payload?.exp < now;
 }
 
+export const parseJwt = jwt_token => {
+    const payload = jwt_token.split(".")[1];
+
+    const decoded_payload = JSON.parse(window.atob(payload));
+
+    return decoded_payload;
+}
+
 window.hasJwtExpired = hasJwtExpired;

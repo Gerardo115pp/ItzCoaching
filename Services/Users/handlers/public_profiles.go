@@ -44,6 +44,7 @@ func deletePublicProfileHandler(response http.ResponseWriter, request *http.Requ
 }
 
 func patchPublicProfileHandler(response http.ResponseWriter, request *http.Request) {
+	var authenicaded_claims map[string]any = request.Context().Value("claim_data").(map[string]any)
 	var updated_public_profile *models.PublicProfile = new(models.PublicProfile)
 
 	err := json.NewDecoder(request.Body).Decode(updated_public_profile)
@@ -57,6 +58,10 @@ func patchPublicProfileHandler(response http.ResponseWriter, request *http.Reque
 	if updated_public_profile.Expert_id == 0 {
 		echo.Echo(echo.OrangeFG, "PublicProfile patch handler error: id is required")
 		response.WriteHeader(422)
+		return
+	} else if authenicaded_claims["id"].(int) != updated_public_profile.Expert_id && authenicaded_claims["is_admin"] != true {
+		echo.Echo(echo.OrangeFG, fmt.Sprintf("PublicProfile patch handler error: expert_id %d does not match authenticated expert_id %d and 'is_admin' is %t", updated_public_profile.Expert_id, authenicaded_claims["id"], authenicaded_claims["is_admin"]))
+		response.WriteHeader(403)
 		return
 	}
 
