@@ -77,7 +77,7 @@ export class RegisterExpertRequest {
     }
 }
 
-export class ExpertProfileRequest {
+export class GetExpertProfileRequest {
     constructor(expert_id) {
         this.id = expert_id;
     }
@@ -142,6 +142,7 @@ export class PostExpertProfilePicture {
         this._token = token;
         this.file = file_blob;
     }
+
 
     do = (on_success, on_error) => {
         const headers = new Headers();

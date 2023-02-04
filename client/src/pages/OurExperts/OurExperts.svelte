@@ -1,5 +1,6 @@
 <script>
     import { ExpertPublicData, expert_types } from '../../libs/itz-utils';
+    import { GetActiveExpertsRequest } from '../../libs/HttpRequests';
     import ExpertCard from './page-components/ExpertCard.svelte';
     import createColorSchema, {
         supported_components
@@ -7,45 +8,7 @@
     import { onMount, onDestroy } from 'svelte';
 
 
-    let experts = [
-        new ExpertPublicData(
-            "mock-id-01", 
-            "Itziar Olóriz", 
-            "Founder & CEO en Itz Coaching", 
-            "Finanzas, estrategia, emprendimiento",
-            "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl,",
-            "/resources/mock_experts/a.webp",
-            expert_types.MENTOR
-        ),
-        new ExpertPublicData(
-            "mock-id-02", 
-            "Ana Sofía Sada", 
-            "Account Associate de thinkPARALLAX", 
-            "Impacto social, marca personal",
-            "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl,",
-            "/resources/mock_experts/s.webp",
-            expert_types.CONSULTANT
-        ),
-        new ExpertPublicData(
-            "mock-id-03", 
-            "Andrea Nacif", 
-            "Team Lead Data Analyst en Nowports", 
-            "Business Intelligence, Design Thinking",
-            "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl,",
-            "/resources/mock_experts/b.jpg",
-            expert_types.CONSULTANT
-        ),
-        new ExpertPublicData(
-            "mock-id-04", 
-            "Camila Zamora", 
-            "Innovation Lead en Sigma Ventures", 
-            "Operación, estrategia, gestión de proyectos",
-            "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl, vitae aliquam nisl nisl euismod nisl. Sed euismod, nisl vitae ultricies lacinia, nisl nisl aliquam nisl,",
-            "/resources/mock_experts/c.jpg",
-            expert_types.CONSULTANT
-        ),
-
-    ];
+    let experts = [];
 
     const our_experts_color_schema = createColorSchema({
         color: "var(--dark-color)",
@@ -54,7 +17,25 @@
 
     onMount(() => {
         our_experts_color_schema.define();
-    })
+
+        requestExpertsProfiles();
+    });
+
+    function requestExpertsProfiles() {
+        const active_experts_request = new GetActiveExpertsRequest();
+
+        const on_success = profiles => {
+            experts = profiles.map(profile => {
+                return new ExpertPublicData(profile.expert_id, profile.public_name, profile.brief, profile.professional_title, profile.description, profile.image_url, profile.expert_type);
+            });
+        };
+
+        const on_error = error => {
+            console.log(error);
+        };
+
+        active_experts_request.do(on_success, on_error);
+    }
 
 </script>
 

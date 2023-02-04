@@ -1,12 +1,24 @@
 <script>
+    import { users_server } from "../../../libs/HttpRequests";
     import { expert_types } from "../../../libs/itz-utils";
+    import itz_logo from '../../../svg/MainLogo.svg'
     export let expert_data;
 </script>
 
 
 <div id="expert-data-card" class="{expert_data.expert_type === expert_types.MENTOR ? 'expert-mentor' : 'expert-consultant'}">
     <div id="expert-pic-wrapper">
-        <img src="{expert_data.image}" alt="{expert_data.name}" class="expert-pic">
+        <figure id="expert-profile-picture">
+            {#if expert_data.image !== undefined && expert_data.image !== ""}
+                <img src="{users_server}/profile_pictures/{expert_data.image}" alt="profile">
+            {:else}
+                <div id="empty-image-placeholder">
+                    <span id="itz-icon">
+                        {@html itz_logo}
+                    </span>
+                </div>
+            {/if}
+        </figure>
         <span class="expert-type">
             {expert_data.expert_type === expert_types.MENTOR ? "Mentora" : "Consultora"}
         </span>
@@ -43,11 +55,40 @@
         height: 65%;
     }
 
-    .expert-pic {
+    #expert-profile-picture {
+        position: relative;
+        border-radius: calc(var(--boxes-roundness) * 2);
+        overflow: hidden;
+        width: 100%;
+        height: calc(2.2 * var(--spacing-h1));
+        margin: 0;
+    }
+
+    #expert-profile-picture img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: var(--boxes-roundness);
+        z-index: 1;
+    }
+
+    #empty-image-placeholder {
+        display: grid;
+        width: 100%;
+        background: var(--theme-red);
+        height: 100%;
+        place-items: center;
+        z-index: 1;
+    }
+
+    #itz-icon {
+        width: 80%;
+        background-size: cover;
+    }
+    
+    :global(#itz-icon svg) {
+        width: 100%;
+        height: 100%;
+        fill: var(--clear-color);
     }
 
     .expert-type {

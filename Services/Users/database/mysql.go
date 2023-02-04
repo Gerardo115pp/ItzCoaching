@@ -120,6 +120,27 @@ func (mysql_repo *MysqlRepository) GetExpertPublicProfile(ctx context.Context, e
 	return public_profile, nil
 }
 
+func (mysql_repo *MysqlRepository) GetActiveExpertProfiles(ctx context.Context) ([]*models.PublicProfile, error) {
+	var public_profiles []*models.PublicProfile
+
+	rows, err := mysql_repo.db.QueryContext(ctx, "SELECT `pp`.`public_name`, `pp`.`professional_title`, `pp`.`description`, `pp`.`brief`, `pp`.`image_href`, `pp`.`expert`, `e`.`type` FROM `public_profiles` `pp` LEFT JOIN `experts` `e` ON `e`.`id`=`pp`.`expert` WHERE `e`.`is_active` = 1 AND `e`.`is_available` = 1")
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var current_profile *models.PublicProfile = new(models.PublicProfile)
+		err = rows.Scan(&current_profile.Public_name, &current_profile.Professional_title, &current_profile.Description, &current_profile.Brief, &current_profile.Image_url, &current_profile.Expert_id, &current_profile.ExpertType)
+		if err != nil {
+			return nil, err
+		}
+
+		public_profiles = append(public_profiles, current_profile)
+	}
+
+	return public_profiles, nil
+}
+
 func (mysql_repo *MysqlRepository) UpdateExpertPublicProfile(ctx context.Context, public_profile *models.PublicProfile) error {
 	var err error
 	var stmt *sql.Stmt

@@ -87,6 +87,9 @@ func getPublicProfileHandler(response http.ResponseWriter, request *http.Request
 	if request.URL.Query().Get("id") != "" {
 		getPublicProfileByIDHandler(response, request)
 		return
+	} else if request.URL.Query().Get("active") != "" {
+		getActivePublicProfilesHandler(response, request)
+		return
 	}
 
 	response.WriteHeader(400)
@@ -119,6 +122,22 @@ func getPublicProfileByIDHandler(response http.ResponseWriter, request *http.Req
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(200)
 	json.NewEncoder(response).Encode(public_profile)
+
+	return
+}
+
+// CALLED BY: getPublicProfileHandler
+func getActivePublicProfilesHandler(response http.ResponseWriter, request *http.Request) {
+	active_public_profiles, err := repository.GetActiveExpertProfiles(request.Context())
+	if err != nil {
+		echo.EchoErr(err)
+		response.WriteHeader(404)
+		return
+	}
+
+	response.Header().Set("Content-Type", "application/json")
+	response.WriteHeader(200)
+	json.NewEncoder(response).Encode(active_public_profiles)
 
 	return
 }

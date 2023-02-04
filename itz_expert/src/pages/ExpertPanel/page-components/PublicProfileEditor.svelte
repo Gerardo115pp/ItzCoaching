@@ -1,5 +1,5 @@
 <script>
-    import { ExpertProfileRequest, ExpertProfileUpdateRequest, PostExpertProfilePicture, users_server } from '../../../libs/HttpRequests';
+    import { GetExpertProfileRequest, ExpertProfileUpdateRequest, PostExpertProfilePicture, users_server } from '../../../libs/HttpRequests';
     import { onMount } from 'svelte';
     import itz_logo from '../../../svg/MainLogo.svg';
     import bonhart_storage from '../../../libs/bonhart-storage';
@@ -34,7 +34,7 @@
     }
 
     const loadProfileContent = () => {
-        const profile_request = new ExpertProfileRequest(expert_data.id);
+        const profile_request = new GetExpertProfileRequest(expert_data.id);
 
         const on_success = (response) => {
             profile_data = response;
@@ -306,6 +306,10 @@
         font-size: var(--font-size-2);
         font-weight: 500;
         text-transform: none;
+    }
+
+    #experts-profession input {
+        width: 100%;
     }
 
     #profile-description {

@@ -14,6 +14,7 @@ type PublicProfile struct {
 	Brief              string `json:"brief"`
 	Image_url          string `json:"image_url"`
 	Expert_id          int    `json:"expert_id"`
+	ExpertType         string `json:"expert_type,omitempty"`
 }
 
 func (pp *PublicProfile) IsCreated() bool {

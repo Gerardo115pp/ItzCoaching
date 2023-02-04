@@ -12,6 +12,7 @@ type UsersRepository interface {
 	UpdateExpert(ctx context.Context, expert *models.Expert) error
 	DeleteExpert(ctx context.Context, id int) error
 	GetExpertPublicProfile(ctx context.Context, expert_id int) (*models.PublicProfile, error)
+	GetActiveExpertProfiles(ctx context.Context) ([]*models.PublicProfile, error)
 	UpdateExpertPublicProfile(ctx context.Context, public_profile *models.PublicProfile) error
 	Close() error
 }
@@ -44,6 +45,10 @@ func DeleteExpert(ctx context.Context, id int) error {
 
 func GetExpertPublicProfile(ctx context.Context, expert_id int) (*models.PublicProfile, error) {
 	return user_repo_implentation.GetExpertPublicProfile(ctx, expert_id)
+}
+
+func GetActiveExpertProfiles(ctx context.Context) ([]*models.PublicProfile, error) {
+	return user_repo_implentation.GetActiveExpertProfiles(ctx)
 }
 
 func UpdateExpertPublicProfile(ctx context.Context, public_profile *models.PublicProfile) error {
