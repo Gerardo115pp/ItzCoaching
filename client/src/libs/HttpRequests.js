@@ -1,4 +1,4 @@
-import { createUnsecureJWT } from "./dandelion-utils";
+import { createUnsecureJWT } from "./bonhart-utils";
 
 export const products_server = PRODUCT_SERVER;
 export const auth_server = AUTH_SERVER;

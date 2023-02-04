@@ -3,6 +3,8 @@
     import { FieldStates } from '../../libs/FieldData';
     import { onMount } from 'svelte';
 
+    export let disabled = false;
+
     // Styles
     export let isClear = false;
     export let isSquared = false;
@@ -17,9 +19,9 @@
     export let onBlur;
 
     /* CSS variables */
-    export let input_color = "var(--primary-color)";
-    export let input_dark_color = "var(--dark-light-color)";
-    export let border_color = "var(--primary-color)";
+    export let input_color = "var(--theme-red)";
+    export let input_dark_color = "var(--theme-dark-red)";
+    export let border_color = "var(--theme-red)";
     export let title_font = "var(--font-title)";
     export let text_font = "var(--font-text)";
     export let font_size = "var(--font-size-2)";
@@ -171,26 +173,20 @@
 </style>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
-bind:this={button_pointer} 
-on:click={handleOutsideClickDetected}
-style="padding: {input_padding};border-color: var({state_color}); background: {input_background};" 
-class={composeClassName()}
+    bind:this={button_pointer} 
+    on:click={handleOutsideClickDetected}
+    style="padding: {input_padding};border-color: var({state_color}); background: {input_background};" 
+    class={composeClassName()}
 >
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-{#if input_label !== undefined}
+    {#if input_label !== undefined}
         <label style="font-size: {font_size};"  for={field_data.id}>{input_label}</label>
     {/if}
     {#if field_data.type !== "number"}
         <input id={field_data.id} type={field_data.type}
             placeholder={input_label === undefined || show_placeholder ? field_data.placeholder : ""}
             style="margin: {input_padding}; font-size: {font_size};"
+            disabled={disabled}
             on:keydown={awaitKeys}
             on:blur={onBlur}
         />
@@ -200,7 +196,8 @@ class={composeClassName()}
             on:keydown={awaitKeys}
             on:blur={onBlur}
             value={initial_value}
-            style="font-size: {font_size};"
+            style="font-size: {font_size}; margin: 0;"
+            disabled={disabled}
             min={min}
             max={max}
             autocomplete="{autocomplete}"

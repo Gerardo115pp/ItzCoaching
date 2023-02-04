@@ -1,0 +1,41 @@
+{
+  "name": "itz_admin",
+  "version": "1.0.0",
+  "description": "expert hub for itz coaching",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack serve --open --mode development",
+    "build": "webpack --mode production",
+    "expose": "webpack serve  --open --mode development --host 'libery-dev.com'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gerardo115pp/ItzCoaching.git"
+  },
+  "author": "el_maligno@libery-labs.com",
+  "license": "GPL-2.0-only",
+  "bugs": {
+    "url": "https://github.com/Gerardo115pp/ItzCoaching/issues"
+  },
+  "homepage": "https://github.com/Gerardo115pp/ItzCoaching#readme",
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.18.2",
+    "jwt-decode": "^3.0.1",
+    "svelte": "^3.48.0",
+    "svelte-carousel": "^1.0.20",
+    "svelte-spa-router": "^3.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
+    "babel-loader": "^8.2.5",
+    "copy-webpack-plugin": "^11.0.0",
+    "core-js": "^3.22.7",
+    "html-webpack-plugin": "^5.5.0",
+    "svelte-loader": "^3.1.2",
+    "svg-inline-loader": "^0.8.2",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  }
+}
