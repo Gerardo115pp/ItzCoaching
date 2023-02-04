@@ -112,6 +112,10 @@ func getPublicProfileByIDHandler(response http.ResponseWriter, request *http.Req
 		return
 	}
 
+	if !public_profile.IsCreated() {
+		public_profile.Create()
+	}
+
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(200)
 	json.NewEncoder(response).Encode(public_profile)

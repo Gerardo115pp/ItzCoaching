@@ -1,5 +1,5 @@
 <script>
-    import { ExpertProfileRequest, ExpertProfileUpdateRequest } from '../../../libs/HttpRequests';
+    import { ExpertProfileRequest, ExpertProfileUpdateRequest, PostExpertProfilePicture, users_server } from '../../../libs/HttpRequests';
     import { onMount } from 'svelte';
     import itz_logo from '../../../svg/MainLogo.svg';
     import bonhart_storage from '../../../libs/bonhart-storage';
@@ -15,6 +15,7 @@
     let new_description;
     let new_brief;
     let content_has_changed = false;
+    let image_input;
 
     onMount(() => {
         if (expert_data === undefined) {
@@ -22,6 +23,17 @@
             return;
         }
 
+        loadProfileContent();
+    })
+
+    const contentChanged = () => {
+        // this prevents svelte from doing large verifications in case the DOM has to be updated.
+        if (!content_has_changed) {
+            content_has_changed = true;
+        }
+    }
+
+    const loadProfileContent = () => {
         const profile_request = new ExpertProfileRequest(expert_data.id);
 
         const on_success = (response) => {
@@ -37,13 +49,6 @@
         }
 
         profile_request.do(on_success, on_error);
-    })
-
-    const contentChanged = () => {
-        // this prevents svelte from doing large verifications in case the DOM has to be updated.
-        if (!content_has_changed) {
-            content_has_changed = true;
-        }
     }
 
     const resetEditor = () => {
@@ -80,6 +85,35 @@
         }
     }
 
+    const uploadProfilePicture = () => {
+        const image_file = image_input.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            const upload_profile_picture_request = new PostExpertProfilePicture(image_file, bonhart_storage.Token);
+
+            const on_success = () => {
+                const profile_picture = document.querySelector("#expert-profile-picture img");
+                if (profile_picture !== null) {
+                    const src = profile_picture.src;
+                    profile_picture.src = src  + "?" + new Date().getTime();
+                } else {
+                    loadProfileContent();
+                }
+            }
+
+            const on_error = (error) => {
+                if (error === 401 || error === 403) {
+                    logout();
+                } else {
+                    newNotification("Ah ocurrido un error al intentar actualizar tu perfil, por favor intenta de nuevo más tarde. Si el problema persiste, por favor contacta al administrador.");
+                }
+            }
+
+            upload_profile_picture_request.do(on_success, on_error);
+        }
+        reader.readAsDataURL(image_file);
+    }
+
 </script>
 
 <section id="itz-expert-profile-editor">
@@ -91,8 +125,8 @@
     </div>
     <div id="image-profile-wrapper">
         <figure id="expert-profile-picture">
-            {#if profile_data.image_url !== ""}
-                <img src="{profile_data.image_url}" alt="profile">
+            {#if profile_data.image_url !== undefined && profile_data.image_url !== ""}
+                <img src="{users_server}/profile_pictures/{profile_data.image_url}" alt="profile">
             {:else}
                 <div id="empty-image-placeholder">
                     <span id="itz-icon">
@@ -100,9 +134,15 @@
                     </span>
                 </div>
             {/if}
+            <div on:click={() => image_input.click()} id="profile-picture-cover">
+                <input bind:this={image_input} on:change={uploadProfilePicture} type="file" name="profile-picture-holder" id="profile-picture-input" accept="image/*">
+                <button  class="material-symbols-outlined" id="change-profile-picture">
+                    image
+                </button>
+            </div>
         </figure>
         <span id="experts-achievements">
-            <input type="text" class="profile-attribute-holder" on:change={contentChanged} bind:value={new_brief}>
+            <input placeholder="tus logros..." type="text" class="profile-attribute-holder" on:change={contentChanged} bind:value={new_brief}>
         </span>
         <span id="expert-sold-meetings-counter">
             0 sesiones
@@ -115,10 +155,10 @@
                 <input on:change={contentChanged} type="text" class="profile-attribute-holder" bind:value={new_public_name}>
             </h1>
             <h2 id="experts-profession">
-                <input on:change={contentChanged} type="text" class="profile-attribute-holder" bind:value={new_professional_title}>
+                <input on:change={contentChanged} type="text" class="profile-attribute-holder" placeholder="a que te dedicas.." bind:value={new_professional_title}>
             </h2>
         </hgroup>
-        <textarea on:change={contentChanged} name="description" id="profile-description" bind:value={new_description}></textarea>
+        <textarea on:change={contentChanged} name="description" id="profile-description" placeholder="una presentacion de tu persona..." bind:value={new_description}></textarea>
     </div>
     <div id="itz-schedule-wrapper"></div>
     <div id="editor-controls">
@@ -173,11 +213,19 @@
     }    
 
     #expert-profile-picture {
+        position: relative;
         border-radius: calc(var(--boxes-roundness) * 2);
         overflow: hidden;
         width: 100%;
         height: calc(4.7 * var(--spacing-h1));
         margin: 0;
+    }
+
+    #expert-profile-picture img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
     }
 
     #empty-image-placeholder {
@@ -186,6 +234,7 @@
         background: var(--theme-red);
         height: 100%;
         place-items: center;
+        z-index: 1;
     }
 
     #itz-icon {
@@ -197,6 +246,35 @@
         width: 100%;
         height: 100%;
         fill: var(--clear-color);
+    }
+
+    #profile-picture-cover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: var(--theme-dark-purple);
+        opacity: 0;
+        transition: opacity 1.3s ease;
+        display: grid;
+        top: 0;
+        left: 0;
+        place-items: center;
+        z-index: 2;
+    }
+
+    #image-profile-wrapper:hover #profile-picture-cover {
+        opacity: 0.8;
+    }
+
+    #change-profile-picture {
+        background: none;
+        border: none;
+        color: var(--clear-color);
+        font-size: calc(4*var(--font-size-h1));
+    }
+
+    #profile-picture-input {
+        display: none;
     }
 
     #experts-achievements {

@@ -45,8 +45,8 @@ export class AdminLoginRequest {
 }
 
 export class RegisterExpertRequest {
-    constructor() {
-        this._token = "";
+    constructor(token) {
+        this._token = token;
         this.name = "";
         this.username = "";
         this.email = "";

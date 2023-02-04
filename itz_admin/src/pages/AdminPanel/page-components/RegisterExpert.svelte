@@ -1,11 +1,12 @@
 <script>
-    import Input from "../../../components/Input/Input.svelte";
-    import CTloader from "../../../components/Loaders/CTloader.svelte";
-    import { RegisterExpertRequest } from '../../../libs/HttpRequests';
     import FieldData, { verifyFormFields, resetFormFields } from "../../../libs/FieldData";
     import { newNotification } from '../../../components/notifications/events' ;
+    import CTloader from "../../../components/Loaders/CTloader.svelte";
+    import { RegisterExpertRequest } from '../../../libs/HttpRequests';
+    import Input from "../../../components/Input/Input.svelte";
+    import bonhart_storage from "../../../libs/bonhart-storage";
 
-    const register_expert_request = new RegisterExpertRequest();
+    const register_expert_request = new RegisterExpertRequest(bonhart_storage.Token);
     let is_form_ready = false;
     let lock_form = false;
 
@@ -37,13 +38,13 @@
                 resetFormFields(form_data);
                 verifyRegistrationForm();
                 expert_type_select.value = "";
-                newNotification("Experta registrado con éxito.");
+                newNotification("Experta registrada con éxito.");
             }
 
             const on_error = error_code => {
                 console.log(error);
                 if (error_code !== 404) {
-                    newNotification(`Error ${error_code}: No se pudo registrar el experto. please report.`);
+                    newNotification(`Error ${error_code}: No se pudo registrar a la experta. please report.`);
                 } else {
                     newNotification(`Usuario o contraseña incorrectos.`);
                 }

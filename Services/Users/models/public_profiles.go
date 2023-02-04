@@ -37,7 +37,7 @@ func (pp *PublicProfile) Create() error {
 		return err
 	}
 
-	var schedule_basic_template string = fmt.Sprintf("%s/schedule_basic_template.json", app_config.OPERATION_DATA_PATH)
+	var schedule_basic_template string = fmt.Sprintf("%s/experts/schedules/schedule_basic_template.json", app_config.OPERATION_DATA_PATH)
 	return helpers.CopyFile(schedule_basic_template, fmt.Sprintf("%s/schedule.json", public_profile_dir))
 }
 

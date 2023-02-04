@@ -6,12 +6,16 @@
     import { ExpertLoginRequest } from '../../libs/HttpRequests';
     import FieldData, { verifyFormFields } from "../../libs/FieldData";
     import { newNotification } from '../../components/notifications/events' ;
+    import createColorSchema, {
+        supported_components,
+    } from '../../libs/ColorSchema';
 
     const login_request = new ExpertLoginRequest();
     let is_form_ready = false;
     let lock_form = false;
 
 
+    
 
     let form_data = [
         new FieldData("Expert_email", /[^\n\s;\'\"\`]{2,60}/, "email", "email"),
@@ -27,6 +31,15 @@
         if (bonhart_storage.Token !== "") {
             push("/expert-panel");
         }
+
+        const color_schema = createColorSchema(
+            {
+                color: 'var(--theme-pearl)',
+                contrast: 'var(--theme-purple)',
+            },
+            supported_components.NAVBAR
+        );
+        color_schema.define();
     });
 
     const verifyRegistrationForm = () => {

@@ -53,7 +53,7 @@
         box-sizing: border-box;
         display: flex;
         width: 50%;
-        background: var(--primary-color-midlight);
+        background: var(--theme-red);
         border-radius: var(--boxes-roundness);
         padding: var(--spacing-2) var(--spacing-2);
         color: var(--clear-color);
@@ -80,7 +80,7 @@
     }
 
     #notification-popup .nb-close-btn:hover {
-        color: var(--tertiary-color-midlight);
+        color: var(--theme-light-red);
     }
 
     @media only screen and (max-width: 768px) {

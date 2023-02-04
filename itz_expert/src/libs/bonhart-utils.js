@@ -17,7 +17,7 @@ export const isLoggedIn = (redirect=true) => {
 
 export const logout = () => {
     bonhart_storage.Token = "";
-    push("/login");
+    push("/");
 }
 
 export const createUnsecureJWT = payload => {

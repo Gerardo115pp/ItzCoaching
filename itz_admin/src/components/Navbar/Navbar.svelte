@@ -87,7 +87,6 @@
         background: var(--navbar-schema-background);
         top: 0;
         left: 0;
-        border-bottom: 1px solid var(--primary-color-midlight);
         z-index: 2;
         transition: all 0.2s ease-in-out;
     }

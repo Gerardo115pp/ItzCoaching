@@ -136,3 +136,34 @@ export class ExpertProfileUpdateRequest {
         });
     }
 }
+
+export class PostExpertProfilePicture {
+    constructor(file_blob, token) {
+        this._token = token;
+        this.file = file_blob;
+    }
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Authorization', `Bearer ${this._token}`);
+
+        const form = new FormData();
+
+        form.append('profile_picture', this.file, this.file.name);
+
+
+        const request = new Request(`${users_server}/profile_pictures`, {
+            method: 'POST',
+            headers: headers,
+            body: form
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                on_success();
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}

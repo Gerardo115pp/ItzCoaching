@@ -2,6 +2,7 @@
     import { push, link } from "svelte-spa-router";
     import DropDown from "./sub-components/DropDown.svelte";
     import bonhart_storage from "../../libs/bonhart-storage";
+    import { logout } from "../../libs/bonhart-utils";
     import createColorSchema, {
         supported_components,
     } from "../../libs/ColorSchema";
@@ -46,26 +47,31 @@
             </div>
         </div>
         <div id="itz-options">
-            {#each Object.values(dropdown_names) as ddn}
-                <span class="itz-navoption drop-down-parent">
-                    {#if ddn.href !== null}
-                        <a href={ddn.href} use:link>
-                            <span id={site_page === ddn.href ? "itz-current-route" : ""}>
-                                {ddn.name + (console.log(`${site_page} === ${ddn.href}: ${site_page === ddn.href}`) || "")}
-                                <!-- ths console log is for Debug purposes -->
+            {#if window.location.hash !== "#/"}
+                {#each Object.values(dropdown_names) as ddn}
+                    <span class="itz-navoption drop-down-parent">
+                        {#if ddn.href !== null}
+                            <a href={ddn.href} use:link>
+                                <span id={site_page === ddn.href ? "itz-current-route" : ""}>
+                                    {ddn.name + (console.log(`${site_page} === ${ddn.href}: ${site_page === ddn.href}`) || "")}
+                                    <!-- ths console log is for Debug purposes -->
+                                </span>
+                            </a>
+                        {:else}
+                            <span>
+                                {ddn.name}
                             </span>
-                        </a>
-                    {:else}
-                        <span>
-                            {ddn.name}
-                        </span>
-                    {/if}
-                    <DropDown
-                        drop_down_name={ddn.name}
-                        drop_down_options={ddn.options}
-                    />
+                        {/if}
+                        <DropDown
+                            drop_down_name={ddn.name}
+                            drop_down_options={ddn.options}
+                        />
+                    </span>
+                {/each}
+                <span on:click={logout} class="itz-navoption">
+                    Salir
                 </span>
-            {/each}
+            {/if}
         </div>
     </div>
 </nav>
@@ -154,8 +160,9 @@
 
     @media (pointer: fine) {
         .itz-navoption:hover {
-            color: var(--clear-color) !important;
-            background: var(--primary-color-midlight);
+            cursor: pointer;
+            color: var(--theme-light-red) !important;
+            /* background: var(--theme-pearl); */
             box-shadow: 0px 0px 13px 3px rgba(0, 0, 0, 0.1) !important;
             transform: scale(1.05);
         }
