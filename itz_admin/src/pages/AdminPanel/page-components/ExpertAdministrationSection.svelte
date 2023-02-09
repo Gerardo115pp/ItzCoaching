@@ -1,11 +1,13 @@
 <script>
     import RegisterExpert from "./RegisterExpert.svelte";
+    import ExpertsList from "./ExpertsList.svelte";
 
     const section_options = {
         REGISTER_EXPERT: "register-expert",
         LIST_EXPERTS: "list-experts",
     };
-    let selected_option;
+
+    let selected_option = section_options.LIST_EXPERTS;
 
     const setContentOption = content_option => {
         selected_option = content_option;
@@ -23,6 +25,9 @@
     <section id="selected-option-content">
         <div class="content-option-wrapper {selected_option === section_options.REGISTER_EXPERT ? 'selected-content-option' : '' }">
             <RegisterExpert/>
+        </div>
+        <div class="content-option-wrapper {selected_option === section_options.LIST_EXPERTS ? 'selected-content-option' : '' }">
+            <ExpertsList/>
         </div>
     </section>
 </article>
@@ -64,7 +69,10 @@
     }
 
     .content-option-wrapper.selected-content-option {
-        display: block;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     

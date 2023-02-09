@@ -76,3 +76,32 @@ export class RegisterExpertRequest {
         });
     }
 }
+
+export class GetAllExpertsRequest {
+    constructor(token) {
+        this._token = token;
+    }
+
+    toJson = attributesToJson.bind(this);
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${this._token}`);
+
+        const request = new Request(`${users_server}/experts?all=1`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                promise.json().then(data => {
+                    on_success(data);
+                });
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}

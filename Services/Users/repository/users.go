@@ -9,6 +9,7 @@ type UsersRepository interface {
 	InsertExpert(ctx context.Context, expert *models.Expert) error
 	GetExpertByID(ctx context.Context, id int) (*models.Expert, error)
 	GetExpertByEmail(ctx context.Context, email string) (*models.Expert, error)
+	GetAllExperts(ctx context.Context) ([]*models.Expert, error)
 	UpdateExpert(ctx context.Context, expert *models.Expert) error
 	DeleteExpert(ctx context.Context, id int) error
 	GetExpertPublicProfile(ctx context.Context, expert_id int) (*models.PublicProfile, error)
@@ -33,6 +34,10 @@ func GetExpertByID(ctx context.Context, id int) (*models.Expert, error) {
 
 func GetExpertByEmail(ctx context.Context, email string) (*models.Expert, error) {
 	return user_repo_implentation.GetExpertByEmail(ctx, email)
+}
+
+func GetAllExperts(ctx context.Context) ([]*models.Expert, error) {
+	return user_repo_implentation.GetAllExperts(ctx)
 }
 
 func UpdateExpert(ctx context.Context, expert *models.Expert) error {

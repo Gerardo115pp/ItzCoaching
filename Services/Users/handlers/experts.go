@@ -148,11 +148,47 @@ func getExpertHandler(response http.ResponseWriter, request *http.Request) {
 	} else if request.URL.Query().Get("email") != "" {
 		getExpertByEmailHandler(response, request)
 		return
+	} else if request.URL.Query().Get("all") == "1" {
+		getAllExpertsHandler(response, request)
+		return
 	}
 
 	echo.Echo(echo.OrangeFG, fmt.Sprintf("Cannot process request: %s", request.URL.Path))
 	response.WriteHeader(501)
 	return
+}
+
+func getAllExpertsHandler(response http.ResponseWriter, request *http.Request) {
+	var experts []*models.Expert
+	var err error
+	echo.Echo(echo.GreenFG, "Expert get all handler: getting all experts")
+	if auth_header := request.Header.Get("Authorization"); auth_header == "" {
+		echo.Echo(echo.OrangeFG, "Expert get all handler error: no auth header provided")
+		response.WriteHeader(401)
+		return
+	}
+
+	experts, err = repository.GetAllExperts(request.Context())
+	if err != nil {
+		echo.Echo(echo.OrangeFG, "Expert get all handler error: failed to get experts")
+		echo.EchoErr(err)
+		response.WriteHeader(500)
+		return
+	}
+
+	//clean the password data
+
+	var experts_safedata []map[string]any
+
+	for _, expert := range experts {
+		expert_safedata := helpers.StructToMap(expert)
+		delete(expert_safedata, "password")
+		experts_safedata = append(experts_safedata, expert_safedata)
+	}
+
+	response.Header().Add("Content-Type", "application/json")
+	response.WriteHeader(200)
+	json.NewEncoder(response).Encode(experts_safedata)
 }
 
 // CALLED BY: getExpertHandler

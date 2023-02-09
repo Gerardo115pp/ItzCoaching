@@ -79,6 +79,28 @@ func (mysql_repo *MysqlRepository) GetExpertByEmail(ctx context.Context, email s
 	return targetExpert, err
 }
 
+func (mysql_repo *MysqlRepository) GetAllExperts(ctx context.Context) ([]*models.Expert, error) {
+	var experts []*models.Expert
+
+	rows, err := mysql_repo.db.Query("SELECT id, username, name, email, password, is_active, is_available, created_at, last_login, type, created_by FROM experts")
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var expert *models.Expert = new(models.Expert)
+
+		err = rows.Scan(&expert.ID, &expert.Username, &expert.Name, &expert.Email, &expert.Password, &expert.IsActive, &expert.IsAvailable, &expert.CreatedAt, &expert.LastLogin, &expert.ExpertType, &expert.CreatedBy)
+		if err != nil {
+			return nil, err
+		}
+
+		experts = append(experts, expert)
+	}
+
+	return experts, nil
+}
+
 func (mysql_repo *MysqlRepository) UpdateExpert(ctx context.Context, expert *models.Expert) error {
 	stmt, err := mysql_repo.db.Prepare("UPDATE `experts` SET `username`=?, `name`=?, `email`=?, `password`=?, `is_active`=?, `is_available`=? WHERE `id` = ?")
 	if err != nil {
