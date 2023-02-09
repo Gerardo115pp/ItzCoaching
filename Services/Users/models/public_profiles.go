@@ -42,6 +42,11 @@ func (pp *PublicProfile) Create() error {
 	return helpers.CopyFile(schedule_basic_template, fmt.Sprintf("%s/schedule.json", public_profile_dir))
 }
 
+func (pp *PublicProfile) DestroyContent() error {
+	var public_profile_dir string = fmt.Sprintf("%s/expert_%d", app_config.EXPERTS_DATA_PATH, pp.Expert_id)
+	return os.RemoveAll(public_profile_dir)
+}
+
 func (pp *PublicProfile) Update(new_data map[string]any) error {
 	if new_data["public_name"] != nil {
 		pp.Public_name = new_data["public_name"].(string)

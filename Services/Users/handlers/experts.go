@@ -27,9 +27,13 @@ type UpdateExpertRequest struct {
 	Username    string `json:"username"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
-	IsActive    bool   `json:"is_active,omitempty"`
-	IsAvailable bool   `json:"is_available,omitempty"`
+	IsActive    bool   `json:"is_active"`
+	IsAvailable bool   `json:"is_available"`
 	ExpertType  string `json:"expert_type"`
+}
+
+type DeleteExpertRequest struct {
+	ID int `json:"id"`
 }
 
 func ExpertsHandler(order_server server.Server) http.HandlerFunc {
@@ -59,14 +63,58 @@ func putExpertHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func deleteExpertHandler(response http.ResponseWriter, request *http.Request) {
-	response.WriteHeader(http.StatusMethodNotAllowed)
+	var delete_expert_request *DeleteExpertRequest = new(DeleteExpertRequest)
+	var err error
+
+	err = json.NewDecoder(request.Body).Decode(delete_expert_request)
+	if err != nil {
+		echo.Echo(echo.OrangeFG, "Expert delete handler error: failed to decode request")
+		echo.EchoErr(err)
+		response.WriteHeader(400)
+		return
+	}
+
+	if delete_expert_request.ID == 0 {
+		echo.Echo(echo.OrangeFG, "Expert delete handler error: id is required")
+		response.WriteHeader(422)
+		return
+	}
+
+	// we frist need to delete the public_profile data
+	public_profile, err := repository.GetExpertPublicProfile(request.Context(), delete_expert_request.ID)
+	if err != nil {
+		echo.Echo(echo.OrangeFG, "Expert delete handler error: failed to get public_profile")
+		echo.EchoErr(err)
+		response.WriteHeader(404)
+		return
+	}
+
+	err = public_profile.DestroyContent()
+	if err != nil {
+		echo.Echo(echo.OrangeFG, "Expert delete handler error: failed to delete content")
+		echo.EchoErr(err)
+		response.WriteHeader(500)
+		return
+	}
+
+	err = repository.DeleteExpert(request.Context(), delete_expert_request.ID)
+	if err != nil {
+		echo.Echo(echo.OrangeFG, "Expert delete handler error: failed to delete expert")
+		echo.EchoErr(err)
+		response.WriteHeader(500)
+		return
+	}
+
+	echo.Echo(echo.GreenFG, "Expert delete handler: expert deleted successfully")
+
+	response.WriteHeader(200)
 	return
 }
 
 func patchExpertHandler(response http.ResponseWriter, request *http.Request) {
-	var updated_expert_request *UpdateExpertRequest = new(UpdateExpertRequest)
+	var updated_expert_request map[string]any = make(map[string]any)
 
-	err := json.NewDecoder(request.Body).Decode(updated_expert_request)
+	err := json.NewDecoder(request.Body).Decode(&updated_expert_request)
 	if err != nil {
 		echo.Echo(echo.OrangeFG, "Expert patch handler error: failed to decode request")
 		echo.EchoErr(err)
@@ -74,23 +122,24 @@ func patchExpertHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	if updated_expert_request.ID == 0 {
+	if updated_expert_request["id"] == 0 {
 		echo.Echo(echo.OrangeFG, "Expert patch handler error: id is required")
 		response.WriteHeader(422)
 		return
 	}
 
+	updated_expert_request["id"] = int(updated_expert_request["id"].(float64))
+
 	var target_expert *models.Expert
 
-	target_expert, err = repository.GetExpertByID(request.Context(), updated_expert_request.ID)
+	target_expert, err = repository.GetExpertByID(request.Context(), updated_expert_request["id"].(int))
 	if err != nil {
 		echo.Echo(echo.OrangeFG, "Expert patch handler error: failed to get expert")
 		echo.EchoErr(err)
 		response.WriteHeader(404)
 	}
 
-	var raw_request map[string]interface{} = helpers.StructToMap(updated_expert_request)
-	target_expert.Update(raw_request)
+	target_expert.Update(updated_expert_request)
 
 	fmt.Printf("target_expert: %v\n", target_expert)
 	err = repository.UpdateExpert(request.Context(), target_expert)

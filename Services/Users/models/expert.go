@@ -107,6 +107,8 @@ func (expert *Expert) PublicData() map[string]any {
 }
 
 func (expert *Expert) Update(new_data map[string]any) {
+	echo.EchoDebug(fmt.Sprintf("new_data: %v", new_data))
+
 	if new_data["name"] != nil && new_data["name"] != "" {
 		expert.Name = new_data["name"].(string)
 	}
@@ -116,9 +118,11 @@ func (expert *Expert) Update(new_data map[string]any) {
 	if new_data["email"] != nil && new_data["email"] != "" {
 		expert.Email = new_data["email"].(string)
 	}
+	echo.EchoDebug(fmt.Sprintf("is_active: %v", new_data["is_active"]))
 	if new_data["is_active"] != nil {
 		expert.IsActive = new_data["is_active"].(bool)
 	}
+	echo.EchoDebug(fmt.Sprintf("is_available: %v", new_data["is_available"]))
 	if new_data["is_available"] != nil {
 		expert.IsAvailable = new_data["is_available"].(bool)
 	}

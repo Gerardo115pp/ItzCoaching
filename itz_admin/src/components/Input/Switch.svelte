@@ -1,6 +1,8 @@
 <script>
     export let checked = false;
     export let color = "#2196F3";
+    
+    export let onChange = () => {};
 
     let switch_style_sheet;
     let switch_color_rule;
@@ -85,6 +87,6 @@ input:checked + .slider:before {
 </style>
 
 <label class="libery-switch">
-    <input type="checkbox" bind:checked />
+    <input on:change={onChange}  type="checkbox" bind:checked />
     <span class="slider" />
 </label>

@@ -30,6 +30,7 @@
         --theme-gradient: linear-gradient(270deg, #F3F4F1 0%, #E6E2DF 100%);
         --danger: rgb(206, 18, 18);
         --ready: #62C77A;
+        --ready-strong: #35725b;
         --trasparent-theme-color: #ccff6c88;
         --dark-tranparent-background: rgba(0, 0, 0, 0.3);
         

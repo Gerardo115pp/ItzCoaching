@@ -1,16 +1,48 @@
 <script>
     import { onMount } from 'svelte';
     import bonhart_storage from '../../../libs/bonhart-storage';
-    import { GetAllExpertsRequest } from '../../../libs/HttpRequests';
+    import { GetAllExpertsRequest, DeleteExpertRequest, UpdateExpertActiveStatusRequest } from '../../../libs/HttpRequests';
     import Switch from '../../../components/Input/Switch.svelte';
 
     let experts_list = [];
-    let active_experts_metric = 0; // experts that cannot access the platform because an admin has deactivated their account
-    let available_experts_metric = 0; // experts that have an active account but have set their schedule as unavailable
+    let inactive_experts_metric = 0; // experts that cannot access the platform because an admin has deactivated their account
+    let unavailable_experts_metric = 0; // experts that have an active account but have set their schedule as unavailable
 
     onMount(() => {
         getExperts();
     });
+
+    const deleteExpert = id => {
+        const delete_request = new DeleteExpertRequest(bonhart_storage.Token, id);
+
+        const on_success = (response) => {
+            console.log(response);
+            experts_list = experts_list.filter(expert => expert.id !== id);
+        }
+
+        const on_error = (error) => {
+            console.log(error);
+        }
+
+        delete_request.do(on_success, on_error);
+    }
+
+    const toggleExpertActiveStatus = (id, is_active) => {
+        is_active = !is_active;
+
+        const update_request = new UpdateExpertActiveStatusRequest(bonhart_storage.Token, id, is_active);
+
+        const on_success = (response) => {
+            console.log(response);
+            inactive_experts_metric += is_active ? -1 : 1;
+        }
+
+        const on_error = (error) => {
+            console.log(error);
+        }
+
+        update_request.do(on_success, on_error);
+    }
 
     function getExperts() {
         const expert_request = new GetAllExpertsRequest(bonhart_storage.Token);
@@ -18,8 +50,8 @@
         const on_success = (response) => {
             experts_list = response;
             experts_list.forEach(expert => {
-                active_experts_metric += expert.is_active ? 1 : 0;
-                available_experts_metric += expert.is_available ? 1 : 0;
+                inactive_experts_metric += expert.is_active ? 0 : 1;
+                unavailable_experts_metric += expert.is_available ? 0 : 1;
             });
         }
 
@@ -45,7 +77,7 @@
             <span class="expert-metric-name">
                 disponibles
             </span><span class="expert-metric-value">
-                {available_experts_metric}
+                {experts_list.length - unavailable_experts_metric}
             </span>
         </div>
         <div class="expert-metric-wrapper">
@@ -53,7 +85,7 @@
                 inactivas
             </span>
             <span class="expert-metric-value">
-                {active_experts_metric}
+                {inactive_experts_metric}
             </span>
         </div>
     </header>
@@ -70,7 +102,7 @@
                     </span>
                 </div>
                 <div class="ei-column expert-data">
-                    <span class="expert-availability">
+                    <span class="expert-availability {expert.is_available ? 'expert-available-status' : ''}">
                         {expert.is_available ? 'disponible' : 'no disponible'}
                     </span>
                 </div>
@@ -80,11 +112,11 @@
                             activa
                         </span>
                         <span class="ec-control-input">
-                            <Switch checked={expert.is_active} />
+                            <Switch checked={expert.is_active} onChange={() => toggleExpertActiveStatus(expert.id, expert.is_active)} />
                         </span>
                     </div>
                     <div class="expert-control">
-                        <button class="ec-control-input full-btn-thin delete-expert-btn material-symbols-outlined">
+                        <button on:click={() => deleteExpert(expert.id)} class="ec-control-input full-btn-thin delete-expert-btn material-symbols-outlined">
                             close
                         </button>
                     </div>
@@ -155,7 +187,7 @@
     .expert-item:nth-child(odd) {
         background: var(--theme-light-red);
     }
-    
+
     /* DEBUG: BOXES */
     /* .expert-item * {
         border: 1px solid blue;
@@ -165,10 +197,14 @@
         display: flex;
         width: 33%;
         background: var(--theme-red);
-        height: 99%;
+        height: 98%;
         color: white;
         align-items: center;
         border-bottom: 1px solid white;
+    }
+
+    .expert-available-status {
+        color: var(--ready-strong);
     }
 
     .expert-data {

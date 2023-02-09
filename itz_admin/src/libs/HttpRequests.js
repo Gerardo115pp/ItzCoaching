@@ -105,3 +105,62 @@ export class GetAllExpertsRequest {
         });
     }
 }
+
+export class DeleteExpertRequest {
+    constructor(token, id) {
+        this._token = token;
+        this.id = id;
+    }
+
+    toJson = attributesToJson.bind(this);
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${this._token}`);
+
+        const request = new Request(`${users_server}/experts`, {
+            method: 'DELETE',
+            headers: headers,
+            body: this.toJson()
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                on_success();
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}
+
+export class UpdateExpertActiveStatusRequest {
+    constructor(token, id, new_status) {
+        this._token = token;
+        this.id = id;
+        this.is_active = new_status;
+    }
+
+    toJson = attributesToJson.bind(this);
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${this._token}`);
+
+        const request = new Request(`${users_server}/experts`, {
+            method: 'PATCH',
+            headers: headers,
+            body: this.toJson()
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                on_success();
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}
