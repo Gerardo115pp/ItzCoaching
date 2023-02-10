@@ -61,7 +61,7 @@ func (mysql_repo *MysqlRepository) GetExpertByID(ctx context.Context, id int) (*
 
 	echo.EchoWarn(fmt.Sprintf("Expert %d not found in cache", id))
 
-	err = mysql_repo.db.QueryRow("SELECT id, username, name, email, password, is_active, is_available, created_at, last_login, type, created_by FROM experts WHERE id = ?", id).Scan(
+	err = mysql_repo.db.QueryRow("SELECT `id`, `username`, `name`, `email`, `password`, `is_active`, (`is_available` AND `is_email_verified`) AS `is_available`, `created_at`, `last_login`, `type`, `created_by` FROM `experts` WHERE `id` = ?", id).Scan(
 		&target_expert.ID, &target_expert.Username, &target_expert.Name, &target_expert.Email, &target_expert.Password, &target_expert.IsActive, &target_expert.IsAvailable, &target_expert.CreatedAt, &target_expert.LastLogin, &target_expert.ExpertType, &target_expert.CreatedBy,
 	)
 
@@ -73,7 +73,7 @@ func (mysql_repo *MysqlRepository) GetExpertByEmail(ctx context.Context, email s
 	var targetExpert *models.Expert = new(models.Expert)
 	var err error
 
-	err = mysql_repo.db.QueryRow("SELECT id, username, name, email, password, is_active, is_available, created_at, last_login, type, created_by FROM experts WHERE email = ?", email).Scan(
+	err = mysql_repo.db.QueryRow("SELECT `id`, `username`, `name`, `email`, `password`, `is_active`, (`is_available` AND `is_email_verified`) AS `is_available`, `created_at`, `last_login`, `type`, `created_by` FROM experts WHERE email = ?", email).Scan(
 		&targetExpert.ID, &targetExpert.Username, &targetExpert.Name, &targetExpert.Email, &targetExpert.Password, &targetExpert.IsActive, &targetExpert.IsAvailable, &targetExpert.CreatedAt, &targetExpert.LastLogin, &targetExpert.ExpertType, &targetExpert.CreatedBy,
 	)
 	return targetExpert, err
@@ -82,7 +82,7 @@ func (mysql_repo *MysqlRepository) GetExpertByEmail(ctx context.Context, email s
 func (mysql_repo *MysqlRepository) GetAllExperts(ctx context.Context) ([]*models.Expert, error) {
 	var experts []*models.Expert
 
-	rows, err := mysql_repo.db.Query("SELECT id, username, name, email, password, is_active, is_available, created_at, last_login, type, created_by FROM experts")
+	rows, err := mysql_repo.db.Query("SELECT id, username, name, email, password, is_active, (`is_available` AND `is_email_verified`) AS `is_available`, created_at, last_login, type, created_by FROM experts")
 	if err != nil {
 		return nil, err
 	}
