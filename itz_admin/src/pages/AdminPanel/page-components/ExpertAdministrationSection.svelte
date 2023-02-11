@@ -7,7 +7,7 @@
         LIST_EXPERTS: "list-experts",
     };
 
-    let selected_option = section_options.LIST_EXPERTS;
+    let selected_option;
 
     const setContentOption = content_option => {
         selected_option = content_option;

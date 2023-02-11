@@ -116,6 +116,7 @@
 
     #expert-registration-form {
         display: flex;
+        width: 100%;
         padding: var(--spacing-3);
         flex-direction: column;
         align-items: center;

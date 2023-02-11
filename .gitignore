@@ -3,4 +3,6 @@
 /**/public/resources/*
 /**/portal
 /**/operation_data/
-
+/**/build/
+/**/mysql_dumps/
+/**/docker-compose.yaml

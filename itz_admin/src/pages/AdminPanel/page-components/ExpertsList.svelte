@@ -48,11 +48,13 @@
         const expert_request = new GetAllExpertsRequest(bonhart_storage.Token);
 
         const on_success = (response) => {
-            experts_list = response;
-            experts_list.forEach(expert => {
-                inactive_experts_metric += expert.is_active ? 0 : 1;
-                unavailable_experts_metric += expert.is_available ? 0 : 1;
-            });
+            if (response !== null) {
+                experts_list = response;
+                experts_list.forEach(expert => {
+                    inactive_experts_metric += expert.is_active ? 0 : 1;
+                    unavailable_experts_metric += expert.is_available ? 0 : 1;
+                });
+            }
         }
 
         const on_error = (error) => {
