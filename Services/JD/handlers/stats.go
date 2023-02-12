@@ -5,19 +5,19 @@ import (
 	"net/http"
 )
 
-func ExpertsHandler(order_server server.Server) http.HandlerFunc {
+func SystemStatsHandler(order_server server.Server) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodGet:
-			getExpertHandler(response, request)
+			getSystemStatsHandler(response, request)
 		case http.MethodPost:
-			postExpertHandler(response, request)
+			postSystemStatsHandler(response, request)
 		case http.MethodPatch:
-			patchExpertHandler(response, request)
+			patchSystemStatsHandler(response, request)
 		case http.MethodDelete:
-			deleteExpertHandler(response, request)
+			deleteSystemStatsHandler(response, request)
 		case http.MethodPut:
-			putExpertHandler(response, request)
+			putSystemStatsHandler(response, request)
 		case http.MethodOptions:
 			response.WriteHeader(http.StatusOK)
 		default:
@@ -26,27 +26,27 @@ func ExpertsHandler(order_server server.Server) http.HandlerFunc {
 	}
 }
 
-func putExpertHandler(response http.ResponseWriter, request *http.Request) {
+func putSystemStatsHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusMethodNotAllowed)
 	return
 }
 
-func deleteExpertHandler(response http.ResponseWriter, request *http.Request) {
+func deleteSystemStatsHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusMethodNotAllowed)
 	return
 }
 
-func patchExpertHandler(response http.ResponseWriter, request *http.Request) {
+func patchSystemStatsHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusMethodNotAllowed)
 	return
 }
 
-func postExpertHandler(response http.ResponseWriter, request *http.Request) {
+func postSystemStatsHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusMethodNotAllowed)
 	return
 }
 
-func getExpertHandler(response http.ResponseWriter, request *http.Request) {
+func getSystemStatsHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusMethodNotAllowed)
 	return
 }
