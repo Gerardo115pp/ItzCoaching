@@ -1,9 +1,10 @@
 <script>
-    import { parseJwt } from '../../libs/bonhart-utils';
-    import { onMount } from 'svelte';
-    import { push } from 'svelte-spa-router';
-    import bonhart_storage from "../../libs/bonhart-storage";
     import PublicProfileEditor from './page-components/PublicProfileEditor.svelte';
+    import ExpertsSchedule from './page-components/ExpertsSchedule.svelte';
+    import bonhart_storage from "../../libs/bonhart-storage";
+    import { parseJwt } from '../../libs/bonhart-utils';
+    import { push } from 'svelte-spa-router';
+    import { onMount } from 'svelte';
     import createColorSchema, {
         supported_components,
     } from '../../libs/ColorSchema';
@@ -32,9 +33,13 @@
 </script>
 
 <main id="itz-administrator-panel">
-    <div class="pp-editor-section-wrapper">
+    <section class="admin-panel-section pp-editor-section-wrapper">
         <PublicProfileEditor {expert_data} />
-    </div>
+    </section>
+    <section class="admin-panel-section">
+        <ExpertsSchedule />
+    </section>
+    
 </main>
 
 <style>

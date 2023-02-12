@@ -25,6 +25,7 @@
   "homepage": "https://github.com/Gerardo115pp/ItzCoachingApp#readme",
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.18.2",
+    "dayjs": "^1.11.7",
     "jwt-decode": "^3.0.1",
     "svelte": "^3.48.0",
     "svelte-carousel": "^1.0.20",
