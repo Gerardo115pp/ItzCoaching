@@ -60,6 +60,29 @@ func putSchedulesHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if authenticated_claims["is_available"].(bool) != schedule.IsLogicallyAvailable() && !schedule.IsLogicallyAvailable() {
+		echo.Echo(echo.PurpleFG, fmt.Sprintf("Updating expert %d availability, since she has no available days ", schedule.Expert_id))
+
+		var expert *models.Expert
+		expert, err = repository.GetExpertByID(request.Context(), schedule.Expert_id)
+		if err != nil {
+			echo.Echo(echo.RedFG, "Error getting expert")
+			echo.EchoErr(err)
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		expert.IsAvailable = false
+
+		err = repository.UpdateExpert(request.Context(), expert)
+		if err != nil {
+			echo.Echo(echo.RedFG, "Error updating expert")
+			echo.EchoErr(err)
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
 	public_profile, err := repository.GetExpertPublicProfile(request.Context(), schedule.Expert_id)
 	if err != nil {
 		echo.Echo(echo.RedFG, "Error getting expert profile")
@@ -130,7 +153,7 @@ func getSchedulesHandler(response http.ResponseWriter, request *http.Request) {
 
 	var schedule *models.ExpertSchedule
 	schedule, err = public_profile.GetSchedule(expert.IsAvailable)
-	
+
 	if err != nil {
 		echo.Echo(echo.RedFG, fmt.Sprintf("Error getting expert schedule for expert with id: %d", parsed_id))
 		echo.EchoErr(err)

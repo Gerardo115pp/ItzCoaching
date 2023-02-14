@@ -20,6 +20,24 @@ type ExpertSchedule struct {
 	TimeAvailability  []*TimeSlot     `json:"time_availability"`
 }
 
+func (es *ExpertSchedule) IsLogicallyAvailable() bool {
+	// Check if the expert is available for at least one day of the week
+	var is_avaible bool = false
+
+	is_avaible = is_avaible || es.WeekAvailability["monday"]
+	is_avaible = is_avaible || es.WeekAvailability["tuesday"]
+	is_avaible = is_avaible || es.WeekAvailability["wednesday"]
+	is_avaible = is_avaible || es.WeekAvailability["thursday"]
+	is_avaible = is_avaible || es.WeekAvailability["friday"]
+	is_avaible = is_avaible || es.WeekAvailability["saturday"]
+	is_avaible = is_avaible || es.WeekAvailability["sunday"]
+
+	is_avaible = is_avaible && (len(es.TimeAvailability) > 0)
+
+	return is_avaible
+
+}
+
 func parseSchedule(schedule_path string) (*ExpertSchedule, error) {
 	file_content, err := ioutil.ReadFile(schedule_path)
 	if err != nil {
@@ -68,7 +86,6 @@ func (ts *TimeSlot) sanitize(raw_slot map[string]string) error {
 	ts.Start = start_time
 	ts.End = end_time
 
-	// Check if start_time is before end_time
 	if ts.Start.After(end_time) {
 		return errors.New("start_time is after end_time")
 	}
