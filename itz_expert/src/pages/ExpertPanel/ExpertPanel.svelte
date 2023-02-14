@@ -33,17 +33,20 @@
 </script>
 
 <main id="itz-administrator-panel">
-    <section class="admin-panel-section pp-editor-section-wrapper">
-        <PublicProfileEditor {expert_data} />
-    </section>
     <section class="admin-panel-section">
         <ExpertsSchedule />
     </section>
-    
+    <section class="admin-panel-section pp-editor-section-wrapper">
+        <PublicProfileEditor {expert_data} />
+    </section>
 </main>
 
 <style>
     #itz-administrator-panel {
         padding: var(--page-padding-top);
+    }
+
+    #itz-administrator-panel section:not(:last-child) {
+        margin-bottom: var(--spacing-h2);
     }
 </style>

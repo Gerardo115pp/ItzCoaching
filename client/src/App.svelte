@@ -122,6 +122,12 @@
             margin: 0;
         }
 
+        :global(.itz-subtitle) {
+            font-family: var(--font-text);
+            font-weight: lighter;
+            color: var(--theme-red);
+        }
+
         :global(a) {
             color: var(--theme-color);
             text-decoration: none;

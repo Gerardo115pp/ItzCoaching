@@ -152,7 +152,7 @@
 
     .input-container.clear-input > label {
         display: block;
-        margin-left: -2vw;
+        margin-left: 0vw;
         color: var(--libery-input-dark-color);
         font-weight: regular;
         align-self: flex-start;

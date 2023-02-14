@@ -78,4 +78,21 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP TABLE IF EXISTS `itz_coaching`.`payments`;
+CREATE TABLE `payments` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `appointment` INT(11) NOT NULL,
+    `amount` DECIMAL(10,2) NOT NULL,
+    `currency` VARCHAR(3) NOT NULL,
+    `stripe_charge_id` VARCHAR(255) NOT NULL,
+    `stripe_customer_id` VARCHAR(255) NOT NULL,
+    `stripe_payment_intent_id` VARCHAR(255) NOT NULL,
+    `stripe_payment_id` VARCHAR(255) NOT NULL,
+    `description` TEXT NOT NULL,
+    `status` ENUM('succeded', 'failed', 'pending') NOT NULL DEFAULT 'pending',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`appointment`) REFERENCES `appointments` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 INSERT INTO `admins`(`username`, `email`, `password`, `is_active`, `is_superadmin`) VALUES ( 'el_maligno', 'theronin115@gmail.com', '$2a$10$yDp75OTteLqYx5Y6bX53OuStUxiv9fu997kT5EHNKYbLOqUV3pXNG', 1, 1); 

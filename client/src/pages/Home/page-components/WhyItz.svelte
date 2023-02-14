@@ -59,4 +59,8 @@
         align-items: center;
         justify-content: flex-end;
     }
+
+    #wicw-cc-call-to-action-wrapper button.full-btn {
+        text-transform: none;
+    }
 </style>
