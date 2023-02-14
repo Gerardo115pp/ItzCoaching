@@ -20,6 +20,7 @@ var (
 		"/experts":          {"GET"}, // don't need to check auth for this route with this method
 		"/public_profiles":  {"GET"}, // don't need to check auth for this route with this method
 		"/profile_pictures": {"GET"}, // don't need to check auth for this route with this method
+		"/schedules":        {"GET"}, // don't need to check auth for this route with this method
 
 	}
 )

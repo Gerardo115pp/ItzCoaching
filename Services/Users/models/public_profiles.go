@@ -1,7 +1,9 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	app_config "itz_customers_service/Config"
 	"itz_customers_service/helpers"
 	"os"
@@ -32,7 +34,7 @@ func (pp *PublicProfile) IsCreated() bool {
 }
 
 func (pp *PublicProfile) Create() error {
-	var public_profile_dir string = fmt.Sprintf("%s/expert_%d", app_config.EXPERTS_DATA_PATH, pp.Expert_id)
+	var public_profile_dir string = pp.getProfileDir()
 	err := os.MkdirAll(public_profile_dir, os.ModePerm)
 	if err != nil {
 		return err
@@ -45,6 +47,35 @@ func (pp *PublicProfile) Create() error {
 func (pp *PublicProfile) DestroyContent() error {
 	var public_profile_dir string = fmt.Sprintf("%s/expert_%d", app_config.EXPERTS_DATA_PATH, pp.Expert_id)
 	return os.RemoveAll(public_profile_dir)
+}
+
+func (pp PublicProfile) getProfileDir() string {
+	return fmt.Sprintf("%s/expert_%d", app_config.EXPERTS_DATA_PATH, pp.Expert_id)
+}
+
+func (pp PublicProfile) GetSchedule(is_available bool) (*ExpertSchedule, error) {
+	var schedule_path string = fmt.Sprintf("%s/schedule.json", pp.getProfileDir())
+	schedule, err := parseSchedule(schedule_path)
+	if err != nil {
+		return nil, err
+	}
+
+	schedule.IsExpertAvailable = is_available
+	schedule.Expert_id = pp.Expert_id
+
+	return schedule, nil
+}
+
+func (pp *PublicProfile) UpdateSchedule(new_schedule *ExpertSchedule) error {
+	new_schedule.Expert_id = pp.Expert_id
+	json_data, err := json.Marshal(new_schedule)
+	if err != nil {
+		return err
+	}
+
+	schedule_path := fmt.Sprintf("%s/schedule.json", pp.getProfileDir())
+	err = ioutil.WriteFile(schedule_path, json_data, 0644)
+	return err
 }
 
 func (pp *PublicProfile) Update(new_data map[string]any) error {

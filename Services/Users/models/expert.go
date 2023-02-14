@@ -133,7 +133,6 @@ func (expert *Expert) Update(new_data map[string]any) {
 		var new_password string = new_data["password"].(string)
 		expert.UpdatePassword(new_password)
 	}
-
 }
 
 func (expert *Expert) UpdatePassword(new_password string) {
