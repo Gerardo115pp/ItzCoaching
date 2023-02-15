@@ -1,11 +1,23 @@
 <script>
-    import Input from '../../../components/Input/Input.svelte';
+    import { GetExpertSchedule, PutExpertSchedule, PatchExpertAvailabilityRequest } from '../../../libs/HttpRequests';
+    import { convertTimeToUTC, convertUTCtoLocalTime } from '../../../libs/itz-utils';
+    import { newNotification } from '../../../components/notifications/events';
     import TextCheckbox from '../../../components/Input/TextCheckbox.svelte';
+    import bonhart_storage from '../../../libs/bonhart-storage';
+    import Input from '../../../components/Input/Input.svelte';
+    import { emitExpertDataChanged } from '../events';
     import FieldData from '../../../libs/FieldData';
+    import { onMount } from 'svelte';
 
-    let is_schedule_active = false;
-    const avaliable_hours = [];
-    const avaliable_days = {
+    console.log(convertTimeToUTC('19:41'));
+    console.log(convertTimeToUTC('07:41 PM'));
+
+    export let expert_id;
+    export let is_schedule_active;
+    let is_schedule_active_value = is_schedule_active;
+
+    let avaliable_hours = [];
+    let avaliable_days = {
         monday: false,
         tuesday: false,
         wednesday: false,
@@ -18,7 +30,72 @@
     let time_from = new FieldData('time-from', /.+/, 'time-from', 'time');
     let time_to = new FieldData('time-to', /.+/, 'time-to', 'time');
 
+    onMount(() => {
+        requestSchedule();
+    });
 
+    const addTimeSlot = () => {
+        if (time_from.value === '' || time_to.value === '') {
+            newNotification('Debes ingresar un horario válido');
+            return;
+        }
+
+        const time_slot = {
+            start_time: convertTimeToUTC(time_from.getFieldValue()),
+            end_time: convertTimeToUTC(time_to.getFieldValue()),
+        }
+
+        time_from.clear();
+        time_to.clear();
+
+        avaliable_hours.push(time_slot);
+        avaliable_hours = [...avaliable_hours];
+    }
+
+    const deleteTimeSlot = ptr => {
+        avaliable_hours = avaliable_hours.filter((ts) => ts !== ptr);
+    }
+
+    function requestSchedule() {
+        const schedule_request = new GetExpertSchedule(expert_id);
+
+        const on_success = schedule_data => {
+            avaliable_days = schedule_data.week_availability;
+            avaliable_hours = schedule_data.time_availability;
+        }
+
+        const on_error = error => {
+            newNotification(`Error al obtener tu horario: ${error}`);
+        }
+
+        schedule_request.do(on_success, on_error);
+    }
+
+    function updateSchedule() {
+        const availability_request = new PatchExpertAvailabilityRequest(expert_id, is_schedule_active, bonhart_storage.Token);
+        const schedule_request = new PutExpertSchedule(expert_id, bonhart_storage.Token);
+
+        schedule_request.owner = expert_id;
+        schedule_request.week_availability = avaliable_days;
+        schedule_request.time_availability = avaliable_hours;
+
+        const on_success = schedule_data => {
+            newNotification('Horario actualizado');
+        }
+
+        const on_error = error => {
+            newNotification(`Error al actualizar tu horario: ${error}`);
+        }
+
+        if (is_schedule_active_value !== is_schedule_active) {
+            availability_request.do(() => {
+                emitExpertDataChanged();
+                schedule_request.do(on_success, on_error);
+            }, on_error);
+        } else {
+            schedule_request.do(on_success, on_error);
+        }
+    }
 </script>
 
 <figure id="itz-expert-schedule-manager">
@@ -53,11 +130,20 @@
                         isClear
                     />
                 </div>
-                <button class="full-btn-thin material-symbols-outlined">
+                <button on:click={addTimeSlot} class="full-btn-thin material-symbols-outlined">
                     add
                 </button>
             </div>
-            <ul id="expert-available-hours"></ul>
+            <ul id="expert-available-hours">
+                {#each avaliable_hours as time_slot}
+                    <li class="available-hour">
+                        <span class="time-range">
+                            {convertUTCtoLocalTime(time_slot.start_time)} - {convertUTCtoLocalTime(time_slot.end_time)}
+                        </span>
+                        <button on:click={() => deleteTimeSlot(time_slot)} class="delete-timeslot-btn material-symbols-outlined">close</button>
+                    </li>
+                {/each}
+            </ul>
         </div>
         <div class="smw-schdule-definer" id="weekdays-definer">
             <h4 id="date-definer-label" class="itz-subtitle">
@@ -150,8 +236,9 @@
             <div class="inputs-wrapper">
                 <TextCheckbox 
                     id="smw-sd-availability"
-                    text_label="activar"
+                    text_label={is_schedule_active ? 'disponible' : 'no disponible'}
                     border_width="2px"
+                    width="20ch"
                     background="var(--theme-red)"
                     background_unchecked="var(--clear-color)"
                     font_size="var(--font-size-2)"
@@ -164,7 +251,7 @@
             </div>
         </div>
         <div class="smw-schdule-definer" id="save-btn-wrapper">
-            <button class="full-btn">guardar</button>
+            <button on:click={updateSchedule} class="full-btn">guardar</button>
         </div>
     </div>
 </figure>
@@ -210,6 +297,32 @@
         flex-wrap: wrap;
         gap: var(--spacing-2);
         height: calc(2 * var(--spacing-4));
+        list-style: none;
+    }
+
+    .available-hour {
+        display: flex;
+        align-items: center;
+        height: max-content;
+        background: var(--theme-red);
+        color: var(--clear-color);
+        padding: var(--spacing-1);
+        border-radius: var(--boxes-roundness);
+    }
+
+    .available-hour button {
+        background: transparent;
+        border: none;
+        color: inherit;
+        font-size: var(--font-size-1);
+        font-weight: bolder;
+        transition: color .2s ease-in-out;
+    }
+
+    @media(pointer: fine) {
+        .available-hour button:hover {
+            color: var(--theme-light-red);
+        }
     }
 
     #weekdays-definer {

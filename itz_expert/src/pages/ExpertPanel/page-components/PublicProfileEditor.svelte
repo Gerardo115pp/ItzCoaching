@@ -1,5 +1,5 @@
 <script>
-    import { GetExpertProfileRequest, ExpertProfileUpdateRequest, PostExpertProfilePicture, users_server } from '../../../libs/HttpRequests';
+    import { GetExpertProfileRequest, PatchExpertProfileRequest, PostExpertProfilePicture, users_server } from '../../../libs/HttpRequests';
     import { onMount } from 'svelte';
     import itz_logo from '../../../svg/MainLogo.svg';
     import bonhart_storage from '../../../libs/bonhart-storage';

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
+
+	"github.com/Gerardo115pp/patriots_lib/echo"
 )
 
 type TimeSlot struct {
@@ -87,7 +89,8 @@ func (ts *TimeSlot) sanitize(raw_slot map[string]string) error {
 	ts.End = end_time
 
 	if ts.Start.After(end_time) {
-		return errors.New("start_time is after end_time")
+		// removing validation because everythign is in UTC now
+		echo.EchoWarn(fmt.Sprintf("start_time (%s) is after end_time (%s)", start_time_str, end_time_str))
 	}
 
 	ts.Start = start_time

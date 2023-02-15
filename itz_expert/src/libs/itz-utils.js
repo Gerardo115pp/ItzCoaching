@@ -21,6 +21,45 @@ export const logout = () => {
     push("/login");
 }
 
+export const convertTimeToUTC = time_string => {
+    // time_string is a string representing a time in the format "HH:MM" in the local timezone
+    // returns a string representing the same time in UTC with the format "HH:MM"
+    const time = new Date();
+    console.log("Time string:", time_string);
+    if (time_string.search(/\s?[APapmM]{2}/) >= 0) {
+        console.log("Time string is in the format 'HH:MM AM/PM'");
+        // time_string is in the format "HH:MM AM/PM"
+        const [hours, minutes_am_pm] = time_string.split(":");
+        const [minutes, am_pm] = minutes_am_pm.split(" ");
+        time.setHours(parseInt(hours) + (am_pm === "PM" ? 12 : 0));
+        time.setMinutes(minutes);
+    } else {
+        console.log("Time string is in the format 'HH:MM'");
+        const [hours, minutes] = time_string.split(":");
+        time.setHours(hours);
+        time.setMinutes(minutes);
+        time.setSeconds(0);
+        time.setMilliseconds(0);
+    }
+
+    return `${time.getUTCHours().toString().padStart(2, '0')}:${time.getUTCMinutes().toString().padStart(2, '0')}`;
+}
+
+export const convertUTCtoLocalTime = utc_time => {
+    // utc_time is a string representing a time in the format "HH:MM" in UTC
+    // returns a string representing the same time in the local timezone with the format "HH:MM"
+
+    const time = new Date();
+    const [hours, minutes] = utc_time.split(":");
+    time.setUTCHours(hours);
+    time.setUTCMinutes(minutes);
+    time.setUTCSeconds(0);
+
+    return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+}
+
+    
+
 
 export const createUnsecureJWT = payload => {
     /* 
