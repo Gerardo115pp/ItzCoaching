@@ -65,6 +65,7 @@
 
         --page-padding-1: var(--spacing-4) var(--spacing-h2);
         --page-padding-2: var(--spacing-h3);
+        --page-padding-top: calc(var(--spacing-4) + var(--navbar-height)) var(--spacing-h2) var(--spacing-4);
         
         /* Misc */
         --navbar-height: 15vh; /* Not used yet */
@@ -76,6 +77,7 @@
         
         /* buttons */
         --buttons-padding: var(--spacing-2) var(--spacing-h3);
+        --buttons-padding-thin: var(--spacing-1) var(--spacing-3);
         --buttons-text-transform: capitalize;
         --btn-font-size: var(--font-size-2);
         --button-roundness: var(--boxes-roundness);
@@ -195,6 +197,36 @@
             font-family: var(--font-text);
             box-sizing: border-box;
             padding: var(--buttons-padding);
+            color: var(--theme-purple);
+            background-color: var(--theme-pearl);
+            border-radius: var(--button-roundness);
+            font-weight: var(--button-font-weight);
+            font-size: var(--btn-font-size);
+            border: none;
+            box-shadow: var(--button-shadow);
+            transition: all 0.3s ease-in-out;
+            text-transform: var(--buttons-text-transform);
+        }
+
+        :global(.full-two-btn-thin) {
+            font-family: var(--font-text);
+            box-sizing: border-box;
+            padding: var(--buttons-padding-thin);
+            color: var(--theme-pearl);
+            background-color: var(--theme-purple);
+            border-radius: var(--button-roundness);
+            font-weight: var(--button-font-weight);
+            font-size: var(--btn-font-size);
+            border: none;
+            box-shadow: var(--button-shadow);
+            transition: all 0.3s ease-in-out;
+            text-transform: var(--buttons-text-transform);
+        }
+
+        :global(.clear-two-btn-thin) {
+            font-family: var(--font-text);
+            box-sizing: border-box;
+            padding: var(--buttons-padding-thin);
             color: var(--theme-purple);
             background-color: var(--theme-pearl);
             border-radius: var(--button-roundness);
@@ -431,6 +463,7 @@
 <svelte:head>
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </svelte:head>
 <div id="page-content">
     <NotificationsPopup />

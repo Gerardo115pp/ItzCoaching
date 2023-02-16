@@ -2,13 +2,18 @@
     import { users_server } from "../../../libs/HttpRequests";
     import { expert_types } from "../../../libs/itz-utils";
     import itz_logo from '../../../svg/MainLogo.svg'
+    import { push } from 'svelte-spa-router';
     export let expert_data;
+
+    const gotToExpertProfile = () => {
+        push(`/experta/${expert_data.id}`);
+    }
 </script>
 
 
 <div id="expert-data-card" class="{expert_data.expert_type === expert_types.MENTOR ? 'expert-mentor' : 'expert-consultant'}">
     <div id="expert-pic-wrapper">
-        <figure id="expert-profile-picture">
+        <figure on:click={gotToExpertProfile} id="expert-profile-picture">
             {#if expert_data.image !== undefined && expert_data.image !== ""}
                 <img src="{users_server}/profile_pictures/{expert_data.image}" alt="profile">
             {:else}
@@ -62,6 +67,18 @@
         width: 100%;
         height: calc(2.2 * var(--spacing-h1));
         margin: 0;
+        transition: all .2s ease-in-out;
+    }
+
+    @media(pointer: fine) {
+        #expert-profile-picture {
+            cursor: pointer;
+        }
+
+        #expert-profile-picture:hover {
+            filter: brightness(1.2);
+            transform: scale(1.02);
+        }
     }
 
     #expert-profile-picture img {
