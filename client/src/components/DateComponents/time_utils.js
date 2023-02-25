@@ -47,8 +47,12 @@ export const convertUTCtoLocalTimeString = utc_time => {
     return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 }
 
-const isBefore = (time1, time2) => {
-    return time1 < time2;
+const isBeforeEqual = (time1, time2) => {
+    return time1 <= time2;
+}
+
+const isAfter = (time1, time2) => {
+    return !isBeforeEqual(time1, time2);
 }
 
 export const getDayHours = month_day => {
@@ -81,13 +85,15 @@ export class TimeSlot {
     #duration;
     #start;
     #end;
+    #is_available;
     constructor(start, end) {
-        if (isBefore(end, start)) {
+        if (isBeforeEqual(end, start)) {
             start.setDate(start.getDate() - 1);
         }
         this.#start = start;
         this.#end = end;
         this.#duration = this.#calculateDuration();
+        this.#is_available = true;
     }
 
     get Duration() {
@@ -103,7 +109,7 @@ export class TimeSlot {
     }
 
     set Start(value) {
-        if (isBefore(value, this.#end)) {
+        if (isBeforeEqual(value, this.#end)) {
             this.#start = value;
             this.#duration = this.#calculateDuration();
         }
@@ -118,10 +124,18 @@ export class TimeSlot {
     }
 
     set End(value) {
-        if (isBefore(this.#start, value)) {
+        if (isBeforeEqual(this.#start, value)) {
             this.#end = value;
             this.#duration = this.#calculateDuration();
         }
+    }
+
+    get IsAvailable() {
+        return this.#is_available;
+    }
+
+    set IsAvailable(value) {
+        this.#is_available = value;
     }
 
     #calculateDuration() {
@@ -139,22 +153,52 @@ export class TimeSlot {
         return new TimeSlot(new_start, new_end);
     }
 
+    constraintInTs = tsin => {
+        // constraint this TimeSlot be inside the tsin TimeSlot, if they are not overlapping, this TimeSlot is not modified but is set
+        // to not available
+        tsin = this.#cloneWithMachingDates(tsin.Start, tsin.End);
+
+        // check that the TimeSlots are overlapping in at least one point
+        if (isBeforeEqual(tsin.End, this.#start) || isBeforeEqual(this.#end, tsin.Start)) {
+            this.#is_available = false;
+            return;
+        }
+        
+
+        if (isAfter(tsin.End, this.#start) && isBeforeEqual(tsin.End, this.#end)) {
+            this.#end = new Date(tsin.End);
+            this.#duration = this.#calculateDuration();
+        } else if(isAfter(tsin.Start, this.#start)) {
+            this.#start = new Date(tsin.Start);
+            this.#duration = this.#calculateDuration();
+        }
+    }
+
+    getDurationinMinutes = () => {
+        return this.#duration / 1000 / 60;
+    }
+
     inTimeframe = tsin => {
         tsin = this.#cloneWithMachingDates(tsin.Start, tsin.End);
-        return !isBefore(tsin.Start, this.#start) && isBefore(tsin.End, this.#end);
+        return !isBeforeEqual(tsin.Start, this.#start) && isBeforeEqual(tsin.End, this.#end);
     }
 
     overlaps = tsin => {
         tsin = this.#cloneWithMachingDates(tsin.Start, tsin.End);
         let overlaps = this.inTimeframe(tsin) || tsin.inTimeframe(this);
 
-        overlaps = overlaps || !isBefore(this.#start, tsin.Start) && isBefore(this.#start, tsin.End);
-        overlaps = overlaps || !isBefore(this.#end, tsin.Start) && isBefore(this.#end, tsin.End);
+        overlaps = overlaps || !isBeforeEqual(this.#start, tsin.Start) && isBeforeEqual(this.#start, tsin.End);
+        overlaps = overlaps || !isBeforeEqual(this.#end, tsin.Start) && isBeforeEqual(this.#end, tsin.End);
 
         return overlaps;
     }
 
     toString = () => {
-        return `${this.#start.getHours()}:${this.#start.getMinutes()} -  ${this.#end.getHours()}:${this.#end.getMinutes()}>`;
+        return `${this.#start.getHours().toString().padStart(2, '0')}:${this.#start.getMinutes().toString().padStart(2, '0')} -  ${this.#end.getHours().toString().padStart(2, '0')}:${this.#end.getMinutes().toString().padStart(2, '0')}`;
     }
 }
+
+let aS = new Date();
+aS.setHours(10, 0, 0, 0);
+let aE = new Date();
+aE.setHours(10, 20, 0, 0);

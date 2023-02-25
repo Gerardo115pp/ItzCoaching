@@ -21,8 +21,9 @@
         CALENDAR_VIEW: "calendar_view",
         TIMELINE_VIEW: "timeline_view"
     }
+    
     let current_schedule_mode = schdule_modes.TIMELINE_VIEW;
-    const avaiable_durations = [
+    const available_durations = [
         {
             human_readable: "30 mins",
             value: 30
@@ -73,16 +74,16 @@
 </script>
 
 <section id="expert-schdule-appointer">
-    <div id="esa-available-durations">
+    <!-- <div id="esa-available-durations">
         <h3 class="esa-section-label">Duración</h3>
         <div id="esa-ad-durations">
-            {#each avaiable_durations as appointment_duration}
+            {#each available_durations as appointment_duration}
                 <button class="clear-two-btn-thin" on:click={() => {}}>
                     {appointment_duration.human_readable}
                 </button>
             {/each}
         </div>
-    </div>
+    </div> -->
     <div id="esa-scheduling-component">
         {#if current_schedule_mode === schdule_modes.CALENDAR_VIEW && expert_schedule.week_availability !== undefined}
             <div class="scheduling-component" id="esa-scheduling-calendar">
@@ -99,14 +100,14 @@
             </div>
         {:else}
             <div class="scheduling-component" id="esa-scheduling-timeline">
-                <LiberyTimeline day={current_month_days.Days[0]} available_time_slots={available_schedule_timeslots}/>
+                <LiberyTimeline {available_durations}  day={current_month_days.Days[0]} available_time_slots={available_schedule_timeslots}/>
             </div>
         {/if}
     </div>
 </section>
 
 <style>
-    .esa-section-label {
+    /* .esa-section-label {
         font-family: var(--font-text);
         font-size: var(--font-size-2);
         text-transform: none;
@@ -117,7 +118,7 @@
         flex-wrap: wrap;
         gap: var(--spacing-1);
         padding: var(--spacing-3);
-    }
+    } */
 
     .scheduling-component {
         width: 90%;
