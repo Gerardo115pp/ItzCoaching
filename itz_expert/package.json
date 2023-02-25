@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack serve --open --mode development",
     "build": "webpack --mode production",
-    "expose": "webpack serve  --open --mode development --host 'libery-dev.com'"
+    "expose": "webpack serve  --open --mode development --host 'expertas.developer-itz_coaching.com'"
   },
   "repository": {
     "type": "git",

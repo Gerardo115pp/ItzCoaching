@@ -73,6 +73,7 @@
         --boxes-roundness: 6px;
         --letter-spacing: 0.39936px;
         --boxes-shadow: 0px 5px 4px 1px rgba(0, 0, 0, 0.1);
+        --boxes-shadow-2: 0px 5px 4px 1px rgba(0, 0, 0, 0.3);
         letter-spacing: var(--letter-spacing);
         
         /* buttons */

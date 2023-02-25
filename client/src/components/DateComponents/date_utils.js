@@ -61,6 +61,15 @@ class CalendarDay {
         return current_date.toLocaleDateString('default', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
 
+    toShortString = () => {
+        const current_date = this.toDate();
+        const day = current_date.getDate().toString().padStart(2, '0'); 
+        const month = (current_date.getMonth() + 1).toString().padStart(2, '0');
+        const year = current_date.getFullYear().toString().padStart(4, '0');
+
+        return `${day}/${month}/${year}`;
+    }
+
     isPastDate = () => {
         const input_date = new Date(this.#calendar.Year, this.month, this.day_num);
         
@@ -84,6 +93,8 @@ class CalendarDay {
     toDate = () => {
         return new Date(this.#calendar.Year, this.month, this.day_num);
     }
+    
+
 }
 
 export class CalendarMonth {

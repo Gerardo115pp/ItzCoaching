@@ -82,11 +82,11 @@
 
         if (isDayMarked(month_day)  && !month_day.isPastDate()) {
             if (!month_day.isCurrentDate() || is_current_date_active) {
-                marked_day_callback(month_day.toDate());
+                marked_day_callback(month_day);
             }
         } else if (month_day.inCurrentMonth() && !month_day.isPastDate()) {
             if (!month_day.isCurrentDate() || is_current_date_active) {
-                active_day_callback(month_day.toDate());
+                active_day_callback(month_day);
             }
         } 
     }
