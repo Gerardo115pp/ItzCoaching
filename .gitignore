@@ -6,3 +6,4 @@
 /**/build/
 /**/mysql_dumps/
 /**/docker-compose.yaml
+/**/redis_data/

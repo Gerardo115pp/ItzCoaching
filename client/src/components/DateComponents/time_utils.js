@@ -198,7 +198,3 @@ export class TimeSlot {
     }
 }
 
-let aS = new Date();
-aS.setHours(10, 0, 0, 0);
-let aE = new Date();
-aE.setHours(10, 20, 0, 0);
