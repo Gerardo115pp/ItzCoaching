@@ -103,6 +103,7 @@
     window.scrollTo(0, 0);
 
     onMount(() => {
+        sections_color_schemas.HERO.color_schema.define();
         section_collition_listener = checkLastComponentCollition.bind({}, sections_color_schemas);
         window.addEventListener('scroll', section_collition_listener);
     });
