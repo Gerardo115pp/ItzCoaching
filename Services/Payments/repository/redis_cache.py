@@ -4,6 +4,7 @@ from models import Appointment
 redis_cache_interface = [
     "getPendingAppointment",
     "setPendingAppointment",
+    "getAllPendingAppointments"
 ]
 
 def checkMethodImplemented(cls: Any, method_name: str) -> bool:
@@ -31,6 +32,9 @@ class RedisCache(metaclass=RedisCacheMeta):
     def setPendingAppointment(self, appointment: Appointment) -> Exception:
         raise NotImplementedError("This method wasnt implemented")
     
+    def getAllPendingAppointments(self) -> tuple[list[Appointment], Exception]:
+        raise NotImplementedError("This method wasnt implemented")
+    
 implementation: RedisCache = None
 
 def setCache(cache: RedisCache) -> None:
@@ -41,5 +45,8 @@ def setCache(cache: RedisCache) -> None:
 def getPendindAppointment(appointment_hash: str) -> tuple[Appointment, Exception]:
     return implementation.getPendingAppointment(appointment_hash)
 
-def setPendingAppointment(appointment: Appointment) -> Exception:
-    implementation.setPendingAppointment(appointment)
+def setPendingAppointment(appointment: Appointment) -> tuple[str, Exception]:
+    return implementation.setPendingAppointment(appointment)
+
+def getAllPendingAppointments() -> tuple[list[Appointment], Exception]:
+    return implementation.getAllPendingAppointments()

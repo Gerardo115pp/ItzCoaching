@@ -64,6 +64,13 @@ export class ExpertPublicData {
     toJson = attributesToJson.bind(this);
 }
 
+export const getUrlPARAM = key => {
+    let url_string = window.location.href; 
+    url_string = url_string.replace(/\/.{0,3}#/, ""); // remove #
+    let url = new URL(url_string);
+    return url.searchParams.get(key);
+}
+
 export const expert_types = {
     CONSULTANT: "consultant",
     MENTOR: "mentor",

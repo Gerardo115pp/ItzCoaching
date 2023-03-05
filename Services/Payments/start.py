@@ -1,6 +1,7 @@
 import Config as service_config
 from flask_cors import CORS
 from handlers.appointments import appointments_blueprint
+from handlers.payments import payments_blueprint
 from flask import Flask
 import repository
 import database
@@ -9,10 +10,23 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     app.register_blueprint(appointments_blueprint, url_prefix='/appointments')
+    app.register_blueprint(payments_blueprint, url_prefix='/payments')
     
     # set redis cache
     redis_cache = database.createRedisCache()
     repository.redis_cache.setCache(redis_cache)
+    
+    # set appointments repository
+    appointments_repository = database.createAppointmentsRepository()
+    repository.appointments.setAppointmentRepository(appointments_repository)
+    
+    # set experts repository
+    experts_repository = database.createExpertsRepository()
+    repository.experts.setExpertsRepository(experts_repository)
+    
+    # set payments repository
+    payments_repository = database.createPaymentsRepository()
+    repository.payments.setPaymentsRepository(payments_repository)
     
     return app
 

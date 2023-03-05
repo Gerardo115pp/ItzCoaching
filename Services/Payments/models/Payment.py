@@ -12,9 +12,10 @@ class PaymentStatus(str, Enum):
     PENDING = "pending"
     SUCCEDED = "succeded"
     FAILED = "failed"
+    REFUNDED = "refunded"
 
 
-@dataclass(frozen=True)
+@dataclass
 class Payment:
     id: int
     appointment: int
@@ -23,8 +24,25 @@ class Payment:
     stripe_charge_id: str
     stripe_customer_id: str
     stripe_payment_intent_id: str
-    stripe_payment_id: str
+    stripe_session_id: str
+    stripe_refund_id: str
     description: str
     status: PaymentStatus
     created_at: datetime
     
+    
+def createEmptyPayment(appointment_id: int, amount: int, currency: str='mxn') -> Payment:
+    return Payment(
+        id=None,
+        appointment=appointment_id,
+        amount=amount,
+        currency=currency,
+        stripe_charge_id="",
+        stripe_customer_id="",
+        stripe_payment_intent_id="",
+        stripe_session_id="",
+        stripe_refund_id="",
+        description="",
+        status=PaymentStatus.PENDING,
+        created_at=datetime.now()
+    )

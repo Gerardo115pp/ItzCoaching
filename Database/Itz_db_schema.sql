@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `itz_coaching`.`experts` (
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `type` ENUM('mentor', 'consultant') NOT NULL,
+    `minute_price` DECIMAL(10,2) NOT NULL DEFAULT '10.00',
     `created_by` INT(11) NOT NULL,
     CONSTRAINT `expert_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     PRIMARY KEY (`id`)
@@ -62,8 +63,8 @@ CREATE TABLE `appointments` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-DROP TABLE IF EXISTS `itz_coaching`.`appintment_confirmations`;
-CREATE TABLE `appintment_confirmations` (
+DROP TABLE IF EXISTS `itz_coaching`.`appointment_confirmations`;
+CREATE TABLE `appointment_confirmations` (
     `appointment` INT(11) NOT NULL,
     `expert_confirmed` TIMESTAMP NULL DEFAULT NULL,
     `consumer_confirmed` TIMESTAMP NULL DEFAULT NULL,
@@ -78,21 +79,32 @@ BEGIN
 END //
 DELIMITER ;
 
+
+--  AMOUNT IS IN CENTS to 20.12 -> 2012
 DROP TABLE IF EXISTS `itz_coaching`.`payments`;
 CREATE TABLE `payments` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `appointment` INT(11) NOT NULL,
-    `amount` DECIMAL(10,2) NOT NULL,
+    `amount` INT NOT NULL, 
     `currency` VARCHAR(3) NOT NULL,
-    `stripe_charge_id` VARCHAR(255) NOT NULL,
-    `stripe_customer_id` VARCHAR(255) NOT NULL,
-    `stripe_payment_intent_id` VARCHAR(255) NOT NULL,
-    `stripe_payment_id` VARCHAR(255) NOT NULL,
+    `stripe_charge_id` VARCHAR(255) NOT NULL DEFAULT '',
+    `stripe_customer_id` VARCHAR(255) NOT NULL DEFAULT '',
+    `stripe_session_id` VARCHAR(255) NOT NULL DEFAULT '',
+    `stripe_payment_intent_id` VARCHAR(255) NOT NULL DEFAULT '',
+    `stripe_refund_id` VARCHAR(255) NOT NULL DEFAULT '',
     `description` TEXT NOT NULL,
-    `status` ENUM('succeded', 'failed', 'pending') NOT NULL DEFAULT 'pending',
+    `status` ENUM('succeded', 'failed', 'pending', 'refounded') NOT NULL DEFAULT 'pending',
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`appointment`) REFERENCES `appointments` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+DROP TRIGGER IF EXISTS `itz_coaching`.`appointment_confirmations_CREATE`;
+DELIMITER //
+CREATE TRIGGER `appointment_confirmations_CREATE` AFTER INSERT ON `appointments` FOR EACH ROW
+BEGIN
+    INSERT INTO `appointment_confirmations` (`appointment`) VALUES (NEW.id);
+END //
+DELIMITER ;
 
 INSERT INTO `admins`(`username`, `email`, `password`, `is_active`, `is_superadmin`) VALUES ( 'el_maligno', 'theronin115@gmail.com', '$2a$10$yDp75OTteLqYx5Y6bX53OuStUxiv9fu997kT5EHNKYbLOqUV3pXNG', 1, 1); 

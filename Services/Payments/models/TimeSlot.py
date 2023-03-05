@@ -33,3 +33,6 @@ class TimeSlot:
         new_end = end.replace(self.endtime.year, self.endtime.month, self.endtime.day + (1 if is_day_after else 0))
         
         return TimeSlot(new_start.strftime("%Y-%m-%d %H:%M:%S"), new_end.strftime("%Y-%m-%d %H:%M:%S"))
+    
+    def overlaps(self, other: 'TimeSlot') -> bool:
+        return (self.starttime <= other.endtime) and (other.starttime <= self.endtime)

@@ -3,7 +3,9 @@ from middleware.auth import token_required
 import Config as service_config
 from datetime import datetime, timedelta
 import repository
+import workflows
 import models
+import json
 
 appointments_blueprint = Blueprint('appointments', __name__)
 
@@ -16,17 +18,30 @@ def POSTappointmentsHandler():
     appointment_ts = models.TimeSlot(json_body['utc_start'], json_body['utc_end'])
     appointment = models.Appointment(None, json_body['expert_id'], json_body['customer_email'], appointment_ts.starttime, appointment_ts.Duration)
     
-    #TODO: validate that the appointment is no longer than 1 hour
-    if appointment.duration > timedelta(hours=1):
+    if not (workflows.schedulers.isAvailable(appointment)):
+        error_response = {
+            "human_readable": "El horario seleccionado ya no está disponible",
+        }
+        
+        return make_response(json.dumps(error_response), 409)
+    
+    cache_hash, err = workflows.schedulers.cacheAppointment(appointment)
+    if err:
+        print(f"Error while caching appointment: {err}")
         return make_response("", 406)
     
-    #TODO: validate that there is no other appointment for the same expert and the same customer_email, because we dont want to allow DDoS attacks
+    checkout_session = workflows.stripe_flows.createAppointmentCheckoutSession(appointment, f"{service_config.CUSTOMERS_URL}/#/appointment-success", f"{service_config.CUSTOMERS_URL}/#/appointment-failed", cache_hash)
+    if not checkout_session:
+        return make_response("", 500)
     
+    response = jsonify({
+        'session_id': checkout_session.id,
+        'session_url': checkout_session.url,
+        'deleteme': checkout_session
+    })
     
-    repository.redis_cache.setPendingAppointment(appointment)
-    
-    response = make_response("", 201)
     return response
+    # return make_response(cache_hash, 200)
 
 @appointments_blueprint.route('/appointment', methods=['GET'])
 def GETappointmentsHandler():
@@ -37,4 +52,7 @@ def GETappointmentsHandler():
         print(f"Error while getting appointment from redis cache: {err}")
         return make_response(jsonify({'error': err}), 404)
     
-    return jsonify(appointment.toJson())
+    response = make_response(appointment.toJson(), 200)
+    response.headers.add_header("Content-Type", "application/json")
+    
+    return response

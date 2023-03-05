@@ -25,11 +25,29 @@ class RedisCache:
 
         return appointment, err
         
-    def setPendingAppointment(self, appointment: Appointment) -> Exception:
+    def setPendingAppointment(self, appointment: Appointment) -> tuple[str, Exception]:
         appointment_bytes = pickle.dumps(appointment)
         appointment_hash = hashlib.sha256(appointment_bytes).hexdigest()
         
         with RedisConnection(self.config) as conn:
             conn.set(appointment_hash, appointment_bytes, ex=240) # 4 minutes
-            
-        return None
+        
+        return appointment_hash, None
+    
+    def getAllPendingAppointments(self) -> tuple[list[Appointment], Exception]:
+        all_appointments = []
+        err = None
+        
+        with RedisConnection(self.config) as conn:
+            for key in conn.scan_iter("*"):
+                
+                value = conn.get(key)
+                
+                if value.startswith(b'\x80\x04\x95'):
+                    try:
+                        all_appointments.append(pickle.loads(value))
+                    except Exception as e:
+                        err = e
+                        return [], err
+        
+        return all_appointments, err

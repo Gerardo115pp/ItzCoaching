@@ -7,3 +7,4 @@
 /**/mysql_dumps/
 /**/docker-compose.yaml
 /**/redis_data/
+/**/__pycache__/

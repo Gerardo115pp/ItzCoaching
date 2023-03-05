@@ -1,6 +1,7 @@
 from . import Appointment as ap_module
 from . import Payment as pay_module
 from . import TimeSlot as ts_module
+from . import Expert as ex_module
 from inspect import getfullargspec
 
 def _allArgsPresent(obj: object, args: list[str]) -> bool:
@@ -22,7 +23,10 @@ AppointmentConfirmation = ap_module.AppointmentConfirmation
 pay_module.allArgsPresent = _allArgsPresent
 Payment = pay_module.Payment
 PaymentStatus = pay_module.PaymentStatus
+createEmptyPayment = pay_module.createEmptyPayment
 
 ts_module.allArgsPresent = _allArgsPresent
 TimeSlot = ts_module.TimeSlot
 
+ex_module.allArgsPresent = _allArgsPresent
+ExpertPersonalData = ex_module.ExpertPersonalData
