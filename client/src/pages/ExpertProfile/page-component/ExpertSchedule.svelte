@@ -1,20 +1,20 @@
 <script>
-    import { GetExpertSchedule } from "../../../libs/HttpRequests";
+    import { TimeSlot, convertUTCtoLocalTime } from "../../../components/DateComponents/time_utils";
     import LiberyTimeline from "../../../components/DateComponents/DayTimeline.svelte";
     import LiberyCalendar  from "../../../components/DateComponents/Calendar.svelte";
-    import { onMount, onDestroy } from "svelte";
+    import { CalendarMonth, formatUTCDate } from "../../../components/DateComponents/date_utils"
     import { newNotification } from "../../../components/notifications/events";
-    import { CalendarMonth } from "../../../components/DateComponents/date_utils"
-    import { TimeSlot, convertUTCtoLocalTime } from "../../../components/DateComponents/time_utils";
+    import { PostAppointmentRequest } from "../../../libs/HttpRequests";
+    import LiberyInput from "../../../components/Input/Input.svelte";
+    import { GetExpertSchedule } from "../../../libs/HttpRequests";
+    import Input from "../../../components/Input/Input.svelte";
+    import FieldData from "../../../libs/FieldData"
+    import { onMount, onDestroy } from "svelte";
 
     export let expert_id;
 
     let expert_schedule = {};
     let available_schedule_timeslots = [];
-
-    // DELETE THIS
-    let now = new Date();
-    let current_month_days = new CalendarMonth(now.getFullYear(), now.getMonth());
 
 
     const schdule_modes = {
@@ -24,6 +24,9 @@
     
     let current_schedule_mode = schdule_modes.CALENDAR_VIEW;
     let selected_day;
+    let selected_time_slot;
+    let email_field = new FieldData("customer-email", /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "customer-email", 'email');
+
     const available_durations = [
         {
             human_readable: "30 mins",
@@ -43,6 +46,43 @@
     onMount(() => {
         getExpertSchedule();
     });
+
+    const appointmentTimeSelected = appointment_time_slot => {
+        selected_time_slot = appointment_time_slot;
+        if (!isFormReady()) {
+            if (selected_time_slot === undefined) {
+                newNotification("Por favor selecciona un horario"); // currently this is impossible to reach, or atleast should be
+            } else if (!email_field.isReady()) {
+                newNotification("Por favor ingresa un correo electrónico");
+            }
+            return;
+        }
+
+        const start_time = selected_day.toDate();
+        const end_time = selected_day.toDate();
+        start_time.setHours(selected_time_slot.Start.getHours());
+        start_time.setMinutes(selected_time_slot.Start.getMinutes());
+        start_time.setSeconds(0);
+
+        end_time.setHours(selected_time_slot.End.getHours());
+        end_time.setMinutes(selected_time_slot.End.getMinutes());
+        end_time.setSeconds(0);
+
+        console.log(`start time: ${formatUTCDate(start_time)} - end time: ${formatUTCDate(end_time)}`);
+
+        const appointment_request = new PostAppointmentRequest(expert_id, formatUTCDate(start_time), formatUTCDate(end_time), email_field.getFieldValue());
+
+        const on_success = appointment => {
+            let url = appointment.session_url
+            window.location.href = url;
+        };
+
+        const on_error = error => {
+            newNotification("Hubo un error al crear la cita");
+        };
+
+        appointment_request.do(on_success, on_error);
+    }
 
     const getExpertSchedule = () => {
         const schedule_request = new GetExpertSchedule(expert_id);
@@ -65,6 +105,8 @@
     };
 
     const handleAvailableDayClick = date => {
+        // IGNORE THIS i dont remember whats the difference between a marked day and an available day
+        // okey i remember, a marked day is a day that the expert is available, but an available day is just a day that is not in the past. what a mess
         newNotification(`Clicked on ${date.toLocaleDateString()}`)
     }
 
@@ -74,8 +116,15 @@
         current_schedule_mode = schdule_modes.TIMELINE_VIEW;
     }
 
-    const appointmentTimeSelected = appointment_time_slot => {
-        newNotification(`Appointment time selected: ${appointment_time_slot.toString()}`);
+    const isFormReady = () => {
+        console.log(email_field.isReady());
+        return selected_day !== undefined && selected_time_slot !== undefined && email_field.isReady();
+    }
+
+    const validateEmail = () => {
+        if (!email_field.verify()) {
+            newNotification("El correo electrónico no es válido");
+        }
     }
 </script>
 
@@ -83,6 +132,20 @@
     <h3 id="esa-header">
         Agenda tu cita
     </h3>
+    <div id="esa-customer-email-wrapper">
+        <div class="esa-customer-email-collector">
+            <Input 
+                field_data={email_field}
+                title_font="var(--font-titles)"
+                font_size="var(--font-size-1)"
+                input_padding="var(--spacing-1)"
+                input_dark_color="var(--theme-red)"
+                input_label="Tu correo electrónico"
+                isClear={true}
+                onBlur={validateEmail}
+            />
+        </div>
+    </div>
     <div id="esa-scheduling-component">
         {#if current_schedule_mode === schdule_modes.CALENDAR_VIEW && expert_schedule.week_availability !== undefined}
             <div class="scheduling-component" id="esa-scheduling-calendar">
@@ -122,24 +185,25 @@
 </section>
 
 <style>
-    /* .esa-section-label {
-        font-family: var(--font-text);
-        font-size: var(--font-size-2);
-        text-transform: none;
-    }
 
-    #esa-ad-durations {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-1);
-        padding: var(--spacing-3);
-    } */
 
     #esa-header {
         font-family: var(--font-titles);
         font-size: var(--font-size-h3);
         text-transform: none;
         margin-bottom: var(--spacing-2);
+    }
+
+    #esa-customer-email-wrapper {
+        box-sizing: border-box;
+        display: flex;
+        /* justify-content: center; */
+        padding: 0 var(--spacing-3);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .esa-customer-email-collector {
+        width: 80%;
     }
 
     .scheduling-component {

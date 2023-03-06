@@ -15,16 +15,21 @@ def POSTappointmentsHandler():
     if not(all(k in json_body for k in {'utc_start', 'utc_end', 'expert_id', "customer_email"})):
         return make_response(jsonify({'error': 'missing required fields'}), 400)
     
+    print(f"{json_body=}")
     appointment_ts = models.TimeSlot(json_body['utc_start'], json_body['utc_end'])
+    print(f"{appointment_ts.endtime} - {appointment_ts.starttime} = {appointment_ts.Duration} ({appointment_ts.Minutes} minutes)")
     appointment = models.Appointment(None, json_body['expert_id'], json_body['customer_email'], appointment_ts.starttime, appointment_ts.Duration)
     
     if not (workflows.schedulers.isAvailable(appointment)):
+        print(f"Appointment not available: {appointment.utc_start}")
         error_response = {
             "human_readable": "El horario seleccionado ya no está disponible",
         }
         
         return make_response(json.dumps(error_response), 409)
     
+    
+    return make_response("", 200)
     cache_hash, err = workflows.schedulers.cacheAppointment(appointment)
     if err:
         print(f"Error while caching appointment: {err}")

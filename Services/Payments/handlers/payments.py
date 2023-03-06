@@ -59,6 +59,8 @@ def POSTstripeConfirmHandler():
     
     
     print(f"Confirming appointment: {appointment.utc_start} of {appointment.durationMinutes()} minutes")
+    appointment.status = models.AppointmentStatus.PAID
+    # FIXME: the date part of the appointment is defaulting to today, fix it
     new_id, err = repository.appointments.insertAppointment(appointment)
     if err:
         print(f"Error while inserting appointment: {err}")

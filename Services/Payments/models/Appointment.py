@@ -71,6 +71,9 @@ class Appointment:
     def durationMinutes(self) -> int:
         return self.duration.seconds / 60
     
+    def durationMilliseconds(self) -> int:
+        return self.duration.seconds * 1000
+    
 
 @dataclass
 class AppointmentConfirmation:

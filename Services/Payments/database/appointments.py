@@ -34,8 +34,9 @@ class AppointmentsRepository:
     def verifyAvailability(self, appointment: Appointment) -> bool:
         with MysqlConnection(self.config) as conn:
             cursor = conn.cursor(prepared=True)
-            sql = "SELECT COUNT(*) AS `overlaps` FROM `appointments` WHERE `expert`=? AND `start` <= DATE_ADD(?, INTERVAL ? SECOND) AND DATE_ADD(`start`, INTERVAL `duration` SECOND) >= ?"
+            sql = "SELECT COUNT(*) AS `overlaps` FROM `appointments` WHERE `expert`=? AND `start` <= DATE_ADD(?, INTERVAL ? SECOND) AND DATE_ADD(`start`, INTERVAL `duration`*1000 MICROSECOND) >= ?" # the duration is in milliseconds
             params = (appointment.expert, appointment.utc_start, appointment.duration.total_seconds(), appointment.utc_start)
+            print(sql, params)
             cursor.execute(sql, params)
             result = cursor.fetchone()
             

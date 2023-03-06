@@ -1,8 +1,33 @@
 <script>
+    import { PostPaymentConfirmationRequest } from "../../libs/HttpRequests";
     import { getUrlPARAM } from "../../libs/itz-utils";
     import itz_logo from "../../svg/MainLogo.svg";
+    import { onMount } from "svelte";
 
     let session_id = getUrlPARAM("session_id");
+
+    onMount(() => {
+        confirmPayment();
+    });
+
+    const confirmPayment = () => {
+        if (session_id === undefined && session_id === "") {
+            console.error("No session id provided");
+            return;
+        }
+
+        const request = new PostPaymentConfirmationRequest(session_id);
+
+        const on_success = response => {
+            console.log(response);
+        };
+
+        const on_error = error => {
+            console.log(error);
+        };
+
+        request.do(on_success, on_error);
+    }
 </script>
 
 <main id="successful-appointment">

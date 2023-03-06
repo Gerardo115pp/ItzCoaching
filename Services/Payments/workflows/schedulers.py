@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from models import Appointment
+from models import Appointment, AppointmentStatus
 import repository
 
 def cacheAppointment(appointment: Appointment) -> tuple[str, Exception]:
@@ -9,7 +9,7 @@ def cacheAppointment(appointment: Appointment) -> tuple[str, Exception]:
         return None, Exception("Appointment duration cannot be greater than 1 hour")
     
     first_appointment, err = repository.appointments.getAppointmentByCustomerExpert(appointment.customer_email, appointment.expert)
-    if not err and first_appointment:
+    if not err and first_appointment and (first_appointment.status != AppointmentStatus.CANCELLED or first_appointment.status != AppointmentStatus.FINALIZED):
         return None, Exception("Appointment already exists")
     
    
@@ -33,7 +33,9 @@ def isAvailableInDatabase(appointment: Appointment) -> bool:
 def isAvailable(appointment: Appointment) -> bool:
     # Check availability in redis cache
     is_available = isAvailableInCachedAppointments(appointment)
+    print(f"Is available in cache: {is_available}")
     if is_available:
         # Check availability in database
         is_available = isAvailableInDatabase(appointment)
+        print(f"Is available in database: {is_available}")
     return is_available
