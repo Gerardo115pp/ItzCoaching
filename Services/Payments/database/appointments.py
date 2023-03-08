@@ -13,9 +13,11 @@ class AppointmentsRepository:
         with MysqlConnection(self.config) as conn:
             cursor = conn.cursor(prepared=True)
             sql = "INSERT INTO appointments (expert, customer_email, start, duration, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"
-            params = (appointment.expert, appointment.customer_email, appointment.utc_start, appointment.duration.total_seconds() * 1000, appointment.status, appointment.created_at)
+            params = (appointment.expert, appointment.customer_email, appointment.StartString, appointment.duration.total_seconds() * 1000, appointment.status, appointment.created_at)
+            print(f"start_time: {appointment.utc_start} duration: {appointment.duration.total_seconds() * 1000}")
             cursor.execute(sql, params)
             last_id = cursor.lastrowid
+            print(f"query executed: {cursor._executed}")
             conn.commit()
         
         return last_id, None
@@ -36,7 +38,6 @@ class AppointmentsRepository:
             cursor = conn.cursor(prepared=True)
             sql = "SELECT COUNT(*) AS `overlaps` FROM `appointments` WHERE `expert`=? AND `start` <= DATE_ADD(?, INTERVAL ? SECOND) AND DATE_ADD(`start`, INTERVAL `duration`*1000 MICROSECOND) >= ?" # the duration is in milliseconds
             params = (appointment.expert, appointment.utc_start, appointment.duration.total_seconds(), appointment.utc_start)
-            print(sql, params)
             cursor.execute(sql, params)
             result = cursor.fetchone()
             

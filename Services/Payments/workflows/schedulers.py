@@ -8,9 +8,10 @@ def cacheAppointment(appointment: Appointment) -> tuple[str, Exception]:
     if appointment.duration > timedelta(hours=1):
         return None, Exception("Appointment duration cannot be greater than 1 hour")
     
-    first_appointment, err = repository.appointments.getAppointmentByCustomerExpert(appointment.customer_email, appointment.expert)
-    if not err and first_appointment and (first_appointment.status != AppointmentStatus.CANCELLED or first_appointment.status != AppointmentStatus.FINALIZED):
-        return None, Exception("Appointment already exists")
+    # TODO: renable this, it is just for testing
+    # first_appointment, err = repository.appointments.getAppointmentByCustomerExpert(appointment.customer_email, appointment.expert)
+    # if not err and first_appointment and (first_appointment.status != AppointmentStatus.CANCELLED or first_appointment.status != AppointmentStatus.FINALIZED):
+    #     return None, Exception("Appointment already exists")
     
    
     return  repository.redis_cache.setPendingAppointment(appointment)

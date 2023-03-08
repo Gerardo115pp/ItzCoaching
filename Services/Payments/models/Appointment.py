@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .TimeSlot import TimeSlot
 from enum import Enum
 from typing import Any
@@ -33,14 +33,15 @@ class Appointment:
         return cls(**json.loads(json_string, cls=AppointmentDECODER))
     
     @classmethod
-    def fromDict(cls, dict: dict) -> 'Appointment':
-        dict["utc_start"] = datetime.strptime(dict["utc_start"], "%Y-%m-%d %H:%M:%S")
-        dict["duration"] = timedelta(milliseconds=float(dict["duration"]))
-        dict["status"] = AppointmentStatus(dict["status"])
-        dict["expert"] = int(dict["expert"])
-        dict["created_at"] = datetime.strptime(dict["created_at"], "%Y-%m-%d %H:%M:%S")
+    def fromDict(cls, appointment_dict: dict) -> 'Appointment':
+        appointment_dict["utc_start"] = datetime.strptime(appointment_dict["utc_start"], "%Y-%m-%d %H:%M:%S")
+        appointment_dict["duration"] = timedelta(milliseconds=float(appointment_dict["duration"]))
+        appointment_dict["status"] = AppointmentStatus(appointment_dict["status"])
+        appointment_dict["expert"] = int(appointment_dict["expert"])
+        appointment_dict["created_at"] = datetime.strptime(appointment_dict["created_at"], "%Y-%m-%d %H:%M:%S")
+        appointment_dict["id"] = appointment_dict.get("id", None)
         
-        return cls(**dict)
+        return cls(**appointment_dict)
     
     # def __post_init__(self) -> None:
     @property
@@ -67,6 +68,9 @@ class Appointment:
         }
         
         return self_dict
+    @property
+    def StartString(self) -> str:
+        return self.utc_start.strftime("%Y-%m-%d %H:%M:%S")
     
     def durationMinutes(self) -> int:
         return self.duration.seconds / 60

@@ -5,12 +5,15 @@ from handlers.payments import payments_blueprint
 from flask import Flask
 import repository
 import database
+import os
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
     app.register_blueprint(appointments_blueprint, url_prefix='/appointments')
     app.register_blueprint(payments_blueprint, url_prefix='/payments')
+    
+    print(os.path.dirname(os.path.abspath(__file__)))
     
     # set redis cache
     redis_cache = database.createRedisCache()

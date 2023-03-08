@@ -24,12 +24,11 @@ def POSTstripeConfirmHandler():
         return make_response("", 400)
     
     cache_hash = checkout_session.client_reference_id
-    print(f"cache_hash: {cache_hash}") # FIXME: remove
+    
     appointment, err = repository.redis_cache.getPendindAppointment(cache_hash)
     if err:
         print(f"Error while getting appointment from redis cache: {err}")
         # appointment reservation expired, retriving from metadata to check if still available
-        print("metadata: ", checkout_session.metadata) # FIXME: remove
         appointment = models.Appointment.fromDict(checkout_session.metadata)
         
         is_available = workflows.schedulers.isAvailable(appointment)
@@ -60,19 +59,23 @@ def POSTstripeConfirmHandler():
     
     print(f"Confirming appointment: {appointment.utc_start} of {appointment.durationMinutes()} minutes")
     appointment.status = models.AppointmentStatus.PAID
-    # FIXME: the date part of the appointment is defaulting to today, fix it
+    
     new_id, err = repository.appointments.insertAppointment(appointment)
     if err:
         print(f"Error while inserting appointment: {err}")
         return make_response("", 500)
 
     appointment.id = new_id
-    err = workflows.stripe_flows.registerPayment(checkout_session, appointment)
+    
+    payment, err = workflows.stripe_flows.registerPayment(checkout_session, appointment)
     if err:
         print(f"Error while registering payment: {err}")
         return make_response("", 500)
     
     # TODO: send email to customer and expert. register appointment in google calendar
+    workflows.email.sendSuccessfulPaymentEmail(appointment, payment, checkout_session.id)
+    if err:
+        print(f"Error while sending email: {err}")
     
     return make_response("", 200)
     

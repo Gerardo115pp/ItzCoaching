@@ -96,7 +96,7 @@ def retrivePaymentIntent(checkout_session: stripe.checkout.Session) -> tuple[str
 
     return payment_intent, err
 
-def retriveCharge(checkout_session: stripe.checkout.Session, payment_intent: stripe.PaymentIntent) -> tuple[stripe.Charge, Exception]:
+def retriveCharge(checkout_session: stripe.checkout.Session, payment_intent: stripe.PaymentIntent=None) -> tuple[stripe.Charge, Exception]:
     err = None
     if not payment_intent:
         payment_intent, err = retrivePaymentIntent(checkout_session)
@@ -130,7 +130,7 @@ def refoundSession(checkout_session: stripe.checkout.Session, reason: str=None) 
     payment.stripe_refund_id = refund.id
     payment.status = models.PaymentStatus.REFUNDED
 
-def registerPayment(checkout_session: stripe.checkout.Session, appointment: models.Appointment) -> Exception:
+def registerPayment(checkout_session: stripe.checkout.Session, appointment: models.Appointment) -> tuple[models.Payment, Exception]:
     
     # Check if session is paid
     if not isSessionPaid(checkout_session):
@@ -150,10 +150,11 @@ def registerPayment(checkout_session: stripe.checkout.Session, appointment: mode
     payment.status = models.PaymentStatus.SUCCEDED
     
     err = repository.payments.insertPayment(payment)
+    return payment, err
     
-def registerUnpayment(checkout_session: stripe.checkout.Session, appointment: models.Appointment) -> Exception:
+def registerUnpayment(checkout_session: stripe.checkout.Session, appointment: models.Appointment) -> tuple[models.Payment, Exception]:
     if checkout_session.status == "open":
-        return Exception("Session is still open")
+        return None, Exception("Session is still open")
     
     payment = models.createEmptyPayment(appointment.id, checkout_session.amount_total)
     appointment.status = models.AppointmentStatus.CANCELLED
@@ -167,4 +168,4 @@ def registerUnpayment(checkout_session: stripe.checkout.Session, appointment: mo
     payment.status = models.PaymentStatus.FAILED
     
     err = repository.payments.insertPayment(payment)
-    return err
+    return payment, err
