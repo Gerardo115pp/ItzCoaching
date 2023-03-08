@@ -17,6 +17,7 @@ import (
 func BinderRoutes(server server.Server, router *patriot_router.Router) {
 	router.RegisterRoute(patriot_router.NewRoute("/", true), handlers.HomeHandler(server))
 	router.RegisterRoute(patriot_router.NewRoute("/stats", true), middleware.CheckAuth(handlers.SystemStatsHandler(server)))
+	router.RegisterRoute(patriot_router.NewRoute("^/appointments", false), middleware.CheckAuth(handlers.AppointmentsHandler(server)))
 }
 
 func main() {
@@ -27,13 +28,12 @@ func main() {
 	var new_server_config *server.ServerConfig = new(server.ServerConfig)
 	new_server_config.Port = app_config.JD_PORT
 
-	users_repository, err := database.NewMYSQLrepository()
+	appointment_database, err := database.NewAppointmentRepository()
 	if err != nil {
-		echo.Echo(echo.RedFG, "Error while creating users repository")
 		echo.EchoFatal(err)
 	}
 
-	repository.SetUsersRepository(users_repository)
+	repository.SetAppointmentsRepository(appointment_database)
 
 	echo.EchoDebug(fmt.Sprintf("server config: %+v", new_server_config))
 

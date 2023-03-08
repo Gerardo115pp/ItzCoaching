@@ -50,7 +50,7 @@ class Appointment:
         return TimeSlot(self.utc_start.strftime("%Y-%m-%d %H:%M:%S"), end.strftime("%Y-%m-%d %H:%M:%S"))
     
     def overlaps(self, other: 'Appointment') -> bool:
-        print(f" self {type(self.TimeSlot).__name__} other {type(other.TimeSlot).__name__}")
+        # print(f" self {type(self.TimeSlot).__name__} other {type(other.TimeSlot).__name__}")
         return self.TimeSlot.overlaps(other.TimeSlot)
     
     def toJson(self) -> dict:

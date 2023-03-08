@@ -17,10 +17,7 @@ import (
 
 var (
 	NO_AUTH_NEEDED = map[string][]string{
-		"/experts":          {"GET"}, // don't need to check auth for this route with this method
-		"/public_profiles":  {"GET"}, // don't need to check auth for this route with this method
-		"/profile_pictures": {"GET"}, // don't need to check auth for this route with this method
-
+		"/appointments/expert": {"GET"},
 	}
 )
 
