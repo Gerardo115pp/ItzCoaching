@@ -1,3 +1,5 @@
+import { TimeSlot } from "./time_utils"
+
 export const weekDays = {
     0: 'Sunday',
     1: 'Monday',
@@ -8,6 +10,36 @@ export const weekDays = {
     6: 'Saturday'
 }
 
+export const weekDaysShort = {
+    0: 'Sun',
+    1: 'Mon',
+    2: 'Tue',
+    3: 'Wed',
+    4: 'Thu',
+    5: 'Fri',
+    6: 'Sat'
+}
+
+export const spanishWeekDays = {
+    0: 'Domingo',
+    1: 'Lunes',
+    2: 'Martes',
+    3: 'Miércoles',
+    4: 'Jueves',
+    5: 'Viernes',
+    6: 'Sábado'
+}
+
+export const spanishWeekDaysShort = {
+    0: 'Dom',
+    1: 'Lun',
+    2: 'Mar',
+    3: 'Mié',
+    4: 'Jue',
+    5: 'Vie',
+    6: 'Sáb'
+}
+
 const weekDayToNumber = {
     'sunday': 0,
     'monday': 1,
@@ -16,6 +48,71 @@ const weekDayToNumber = {
     'thursday': 4,
     'friday': 5,
     'saturday': 6
+}
+
+export class Appointment {
+    #utc_start;
+    #duration;
+    #ts
+    constructor(data, lang="en") {
+        this.id = data.id;
+        this.expert_id = data.expert;
+        this.customer_email = data.customer_email;
+        this.customer_name = data.customer_name;
+        this.#utc_start = parseUTCDate(data.utc_start);
+        this.#duration = data.duration; // milliseconds
+        this.status = data.status;
+        this.created_at = parseUTCDate(data.created_at);
+        this.lang = lang;
+        this.#ts = this.#toTimeSlot();
+    }
+
+    #toTimeSlot = () => {
+        const end = new Date(this.#utc_start.getTime() + this.#duration);
+        return new TimeSlot(this.#utc_start, end);
+    }
+
+    get Start() {
+        return this.#utc_start;
+    }
+
+    get End() {
+        return this.#ts.End;
+    }
+
+    get Duration() {
+        return this.#duration;
+    }
+
+    get TimeSlot() {
+        return this.#ts;
+    }
+
+    get MonthName() {
+        const options = { month: 'long' };
+        const month_name = this.#utc_start.toLocaleTimeString(this.lang, options);
+        return month_name;
+    }
+
+
+    toString = () => {
+        let date_string = "";
+        let week_day_start = weekDaysShort[this.#utc_start.getDay()];
+
+        if (this.lang === "es") {
+            week_day_start = spanishWeekDaysShort[this.#utc_start.getDay()];
+        }
+
+        return `${week_day_start}. ${this.#utc_start.getDate()} ${this.lang === 'en' ? 'of' : 'de'} ${this.MonthName} at ${this.#utc_start.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}`
+    }
+
+    dateString = () => {
+        return `${this.#utc_start.getDate()}-${this.#utc_start.getMonth()+1}-${this.#utc_start.getFullYear()}`
+    }
+
+    timeString = () => {    
+        return `${this.#utc_start.toLocaleTimeString(this.lang, { hour: 'numeric', minute: 'numeric', hour12: true })} - ${this.Duration / 1000 / 60} mins`
+    }
 }
 
 export const getDaysInMonth = date => {
@@ -47,6 +144,18 @@ export const formatUTCDate = (date) => {
     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export const parseUTCDate = (date_string) => {
+    const date_parts = date_string.split(/[^\d]/);
+    const year = parseInt(date_parts[0]);
+    const month = parseInt(date_parts[1]) - 1;
+    const day = parseInt(date_parts[2]);
+    const hours = parseInt(date_parts[3]);
+    const minutes = parseInt(date_parts[4]);
+    const seconds = parseInt(date_parts[5]);
+
+    return new Date(Date.UTC(year, month, day, hours, minutes, seconds));
 }
 
 class CalendarDay {
@@ -95,6 +204,8 @@ class CalendarDay {
         
         return input_date.getTime() === this.#calendar.CurrentDate.getTime();
     }
+
+    isSameDay = compareing_date => this.#calendar.Year === compareing_date.getFullYear() && this.month === compareing_date.getMonth() && this.day_num === compareing_date.getDate();
 
     inCurrentMonth = () => {
         return this.month === this.#calendar.Month;

@@ -180,3 +180,29 @@ export class PostPaymentConfirmationRequest {
         });
     }
 }
+
+export class GetExpertAppointments {
+    constructor(expert_id) {
+        this.expert_id = expert_id;
+    }
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        const request = new Request(`${jd_server}/appointments/expert?id=${this.expert_id}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                promise.json().then(data => {
+                    on_success(data);
+                });
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}

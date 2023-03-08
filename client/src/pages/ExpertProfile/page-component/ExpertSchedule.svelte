@@ -12,6 +12,8 @@
     import { onMount, onDestroy } from "svelte";
 
     export let expert_id;
+    export let expert_appointments = [];
+    $: window.expert_appointments = expert_appointments;
 
     let expert_schedule = {};
     let available_schedule_timeslots = [];
@@ -23,9 +25,11 @@
     }
     
     let current_schedule_mode = schdule_modes.CALENDAR_VIEW;
-    let selected_day;
-    let selected_time_slot;
+    let selected_day; // type: CalendarDay
+    let selected_time_slot; // type: TimeSlot
     let email_field = new FieldData("customer-email", /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "customer-email", 'email');
+
+    let selected_day_appointments = []; // type: []TimeSlot
 
     const available_durations = [
         {
@@ -68,7 +72,6 @@
         end_time.setMinutes(selected_time_slot.End.getMinutes());
         end_time.setSeconds(0);
 
-        console.log(`start time: ${formatUTCDate(start_time)} - end time: ${formatUTCDate(end_time)}`);
 
         const appointment_request = new PostAppointmentRequest(expert_id, formatUTCDate(start_time), formatUTCDate(end_time), email_field.getFieldValue());
 
@@ -94,7 +97,6 @@
             });
             available_schedule_timeslots = new_available_timeslots;
 
-            console.log(available_schedule_timeslots);
         };
 
         const on_error = error => {
@@ -104,6 +106,23 @@
         schedule_request.do(on_success, on_error);
     };
 
+    const getSelectedDayAppointments = new_selected_day => {
+        let selected_day_appointments = [];
+
+        if (new_selected_day !== undefined) {
+
+            let new_selected_day_appointments = [];
+            for(let a of expert_appointments) {
+                if (new_selected_day.isSameDay(a.Start)) {
+                    new_selected_day_appointments.push(a.TimeSlot);
+                }
+            }
+
+            selected_day_appointments = new_selected_day_appointments;
+        }
+        return selected_day_appointments;
+    }
+
     const handleAvailableDayClick = date => {
         // IGNORE THIS i dont remember whats the difference between a marked day and an available day
         // okey i remember, a marked day is a day that the expert is available, but an available day is just a day that is not in the past. what a mess
@@ -111,13 +130,12 @@
     }
 
     const handleMarkedDayClick = date => {
+        selected_day_appointments = getSelectedDayAppointments(date);
         selected_day = date;
-        console.log(selected_day);
         current_schedule_mode = schdule_modes.TIMELINE_VIEW;
     }
 
     const isFormReady = () => {
-        console.log(email_field.isReady());
         return selected_day !== undefined && selected_time_slot !== undefined && email_field.isReady();
     }
 
@@ -166,6 +184,7 @@
                     {available_durations}  
                     day={selected_day} 
                     available_time_slots={available_schedule_timeslots} 
+                    occupied_time_slots={selected_day_appointments}
                     onAppointmentSelected={appointmentTimeSelected}
                     primary_color="var(--theme-red)"
                     font_titles="var(--font-titles)"

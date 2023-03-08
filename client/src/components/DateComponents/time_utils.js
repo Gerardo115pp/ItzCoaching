@@ -51,6 +51,10 @@ const isBeforeEqual = (time1, time2) => {
     return time1 <= time2;
 }
 
+const isBefore = (time1, time2) => {
+    return time1 < time2;
+}
+
 const isAfter = (time1, time2) => {
     return !isBeforeEqual(time1, time2);
 }
@@ -172,6 +176,30 @@ export class TimeSlot {
             this.#start = new Date(tsin.Start);
             this.#duration = this.#calculateDuration();
         }
+    }
+
+    constraintOutTs = tsin => {
+        // constraint this TimeSlot be outside the tsin TimeSlot, if they are not overlapping, this TimeSlot is not modified but is set
+        // to not available
+
+        tsin = this.#cloneWithMachingDates(tsin.Start, tsin.End);
+
+        // check that the TimeSlots are overlapping in at least one point
+        if (isBeforeEqual(tsin.End, this.#start) || isBeforeEqual(this.#end, tsin.Start)) {
+            this.#is_available = false;
+            return;
+        }
+
+        const distance_stos = tsin.Start - this.#start; // name: distance_start_to_start
+        const distance_etoe = tsin.End - this.#end; // name: distance_end_to_end
+
+        if (distance_stos > distance_etoe) {
+            this.#end = new Date(tsin.Start);
+        } else {
+            this.#start = new Date(tsin.End);
+        }
+
+        this.#duration = this.#calculateDuration();
     }
 
     getDurationinMinutes = () => {

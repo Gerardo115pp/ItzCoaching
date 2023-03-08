@@ -1,8 +1,9 @@
 <script>
-    import { GetExpertProfileRequest, GetExpertRequest,  users_server } from "../../libs/HttpRequests";
-    import { onMount, onDestroy } from "svelte";
+    import { GetExpertProfileRequest, GetExpertRequest,  users_server, GetExpertAppointments } from "../../libs/HttpRequests";
+    import { Appointment } from "../../components/DateComponents/date_utils";
     import ExpertSchedule from "./page-component/ExpertSchedule.svelte";
     import itz_logo from "../../svg/MainLogo.svg";
+    import { onMount, onDestroy } from "svelte";
     import createColorSchema, {
         supported_components
     } from '../../libs/ColorSchema';
@@ -15,6 +16,7 @@
     export let params = {}
     
     let expert_id = params.id;
+    let experts_appointments = [];
     let profile_data = {};
     let expert_data = {};
 
@@ -45,6 +47,7 @@
 
         const on_success = expert => {
             expert_data = expert;
+            getExpertAppointments();
             setStyles();
         };
 
@@ -53,6 +56,25 @@
         };
 
         expert_request.do(on_success, on_error);
+    }
+
+    const getExpertAppointments = () => {
+        const appointments_request = new GetExpertAppointments(expert_id);
+
+        const on_success = appointments => {
+            let new_appointments = appointments.map(appointment => new Appointment(appointment));
+                new_appointments.sort((a, b) => {
+                return a.Start.getTime() - b.Start.getTime();
+            });
+
+            experts_appointments = new_appointments;
+        };
+
+        const on_error = error => {
+            console.log(error);
+        };
+
+        appointments_request.do(on_success, on_error);
     }
 
     const setStyles = () => {
@@ -101,7 +123,7 @@
         </p>
     </div>
     <div id="itz-schedule-wrapper">
-        <ExpertSchedule expert_id="{expert_id}"/>
+        <ExpertSchedule expert_id="{expert_id}" expert_appointments={experts_appointments}/>
     </div>
 </main>
 

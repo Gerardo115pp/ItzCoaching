@@ -29,6 +29,7 @@
     // CUSTOMIZATION
     export let available_time_slots = []; // the hours in which the schedule owner is available to schedule appointments 
     export let occupied_time_slots = []; // appointments already scheduled
+    $: window.occupied_time_slots = occupied_time_slots;
     export let available_durations = []; // the possible durations for an appointment
     export let day; // CalendarDay
     export let first_hour_in_view = "11:00"; // the timeline component will scroll to this hour, which is assumed to be in 24 hour format.
@@ -65,6 +66,17 @@
                     } else {
                         hour.IsAvailable = false;
                     }
+                }
+
+                if (hour.getDurationinMinutes() >= 1 && hour.IsAvailable) {
+                    for(let h = 0; h < occupied_time_slots.length; h++) {
+                        let ts = occupied_time_slots[h];
+                        if (hour.overlaps(ts)) {
+                            console.log(`hour ${hour} overlaps with ${ts}`)
+                            hour.constraintOutTs(ts);
+                            break;
+                        }
+                    }   
                 }
             }
             is_available = hour.IsAvailable && hour.getDurationinMinutes() > 1;
@@ -128,8 +140,11 @@
 
     // Returns true if the given hour is occupied by an appointment
     const isHourOccupied = hours_ts => {
+        console.log(`isHourOccupied ${hours_ts}`)
         return occupied_time_slots.some(ts => {
-            return ts.inTimeframe(hours_ts);
+            let is_in_ts = ts.overlaps(hours_ts);
+            console.log(`${hours_ts} in ${ts} = ${is_in_ts}`)
+            return is_in_ts;
         });
     }
 
