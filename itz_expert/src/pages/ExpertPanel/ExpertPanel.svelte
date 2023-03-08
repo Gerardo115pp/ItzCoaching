@@ -1,5 +1,6 @@
 <script>
     import PublicProfileEditor from './page-components/PublicProfileEditor.svelte';
+    import ExpertAppointments from './page-components/ExpertsAppointments.svelte';
     import ExpertsSchedule from './page-components/ExpertsSchedule.svelte';
     import { GetExpertRequest } from '../../libs/HttpRequests';
     import bonhart_storage from "../../libs/bonhart-storage";
@@ -10,7 +11,6 @@
     import createColorSchema, {
         supported_components,
     } from '../../libs/ColorSchema';
-
     let expert_data = {};
     let updated_expert_data = {}; // this has reliable is_available and is_active values. 
 
@@ -61,6 +61,11 @@
     <section class="admin-panel-section">
         {#if expert_data.id !== undefined}
             <ExpertsSchedule expert_id={expert_data.id} is_schedule_active={updated_expert_data.is_available}/>
+        {/if}
+    </section>
+    <section class="admin-panel-section">
+        {#if expert_data.id !== undefined}
+            <ExpertAppointments expert_id={expert_data.id}/>
         {/if}
     </section>
     <section class="admin-panel-section pp-editor-section-wrapper">

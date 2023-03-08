@@ -68,13 +68,17 @@ module.exports = (env, argv) => {
 	const isProd = argv.mode === 'production';
 	const build_config = {
 		AUTH_SERVER: process.env.AUTH_SERVER,
-		USERS_SERVER: process.env.USERS_SERVER
+		USERS_SERVER: process.env.USERS_SERVER,
+		PAYMENTS_SERVER: process.env.PAYMENTS_SERVER,
+		JD_SERVER: process.env.JD_SERVER,
 	}
 
 	config.plugins.push(
 		new webpack.DefinePlugin({
 			"AUTH_SERVER": JSON.stringify(build_config.AUTH_SERVER),
-			"USERS_SERVER": JSON.stringify(build_config.USERS_SERVER)
+			"USERS_SERVER": JSON.stringify(build_config.USERS_SERVER),
+			"PAYMENTS_SERVER": JSON.stringify(build_config.PAYMENTS_SERVER),
+			"JD_SERVER": JSON.stringify(build_config.JD_SERVER),
 		})
 	);
 

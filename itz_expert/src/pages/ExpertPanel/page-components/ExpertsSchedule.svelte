@@ -98,7 +98,7 @@
     }
 </script>
 
-<figure id="itz-expert-schedule-manager">
+<article id="itz-expert-schedule-manager">
     <header id="schedule-manager-header">
         <h3>
             Elige tu horario
@@ -254,7 +254,7 @@
             <button on:click={updateSchedule} class="full-btn">guardar</button>
         </div>
     </div>
-</figure>
+</article>
 
 <style>
     /* DEBUG: BOXES */
@@ -269,7 +269,7 @@
     }
 
     #schedule-manager-header {
-        font-size: var(--font-size-h3);
+        font-size: var(--font-size-4);
         margin-bottom: var(--spacing-4);
     }
 

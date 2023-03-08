@@ -2,6 +2,8 @@ import { createUnsecureJWT } from "./bonhart-utils";
 
 export const auth_server = AUTH_SERVER;
 export const users_server = USERS_SERVER;
+export const jd_server = JD_SERVER;
+export const payments_server = PAYMENTS_SERVER;
 
 function attributesToJson() {
     const json_data = {};
@@ -279,6 +281,32 @@ export class PutExpertSchedule {
         fetch(request).then(promise => {
             if (promise.status >= 200 && promise.status < 300) {
                 on_success();
+            } else {
+                on_error(promise.status);
+            }
+        });
+    }
+}
+
+export class GetExpertAppointments {
+    constructor(expert_id) {
+        this.expert_id = expert_id;
+    }
+
+    do = (on_success, on_error) => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        const request = new Request(`${jd_server}/appointments/expert?id=${this.expert_id}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        fetch(request).then(promise => {
+            if (promise.status >= 200 && promise.status < 300) {
+                promise.json().then(data => {
+                    on_success(data);
+                });
             } else {
                 on_error(promise.status);
             }

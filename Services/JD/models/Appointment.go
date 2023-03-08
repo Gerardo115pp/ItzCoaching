@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type AppointmentStatus string
 
@@ -44,4 +47,18 @@ func (appointment *Appointment) overlaps(other *Appointment) bool {
 
 func (appointment Appointment) Minutes() int {
 	return appointment.Duration / 60000
+}
+
+func (appointment Appointment) MarshalJSON() ([]byte, error) {
+	aux := map[string]interface{}{
+		"id":             appointment.ID,
+		"expert":         appointment.Expert,
+		"customer_email": appointment.Customer_email,
+		"utc_start":      appointment.Utc_start.Format("2006-01-02 15:04:05"),
+		"duration":       appointment.Duration,
+		"status":         appointment.Status,
+		"created_at":     appointment.Created_at.Format("2006-01-02 15:04:05"),
+	}
+
+	return json.Marshal(aux)
 }
